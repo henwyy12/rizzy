@@ -121,7 +121,7 @@ export const SpinWheel = forwardRef<
   useImperativeHandle(ref, () => ({ spin }));
 
   return (
-    <div className="relative aspect-square w-full max-w-[420px]">
+    <div className="relative aspect-square w-full max-w-[540px]">
       <div
         className="h-full w-full"
         style={{

@@ -57,7 +57,7 @@ export default function WheelPage() {
   const chrome = `transition-opacity duration-500 ${spinning ? "opacity-0" : "opacity-100"}`;
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-8">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-4 py-8">
       <Link
         href="/"
         className="self-start text-sm text-app-secondary-text transition-colors hover:text-app-main-text"
@@ -105,7 +105,7 @@ export default function WheelPage() {
             </span>
           </h1>
 
-          <div className="mt-6 w-full max-w-[400px]">
+          <div className="mt-6 w-full max-w-[540px]">
             <SpinWheel
               ref={wheel}
               prizes={prizes}
