@@ -24,7 +24,7 @@ const COINS = [
 // and deposit matches get their own framing
 function headlineFor(p: WheelPrize | null) {
   if (!p) return "";
-  if (!p.win) return "So close";
+  if (!p.win) return "Better luck next time";
   if (p.kind === "fs") return "Free spins!";
   if (p.kind === "match") return "Deposit boost!";
   return "You win!"; // cash
@@ -207,22 +207,28 @@ export default function WheelPage() {
             ))}
 
           <div className="relative flex w-full max-w-md flex-col items-center text-center">
-            <p className="text-7xl font-extrabold uppercase italic tracking-tight text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)] sm:text-8xl">
+            <p
+              className={`font-extrabold uppercase italic tracking-tight text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)] ${
+                result.win ? "text-7xl sm:text-8xl" : "text-5xl sm:text-6xl"
+              }`}
+            >
               {headlineFor(result)}
             </p>
-            {/* prize reward chip: bright gradient ring + dark glass + gradient text */}
-            <div className="mt-8 rounded-2xl bg-gradient-to-b from-[#c88bff] via-[#a855ff] to-[#6a1fc4] p-[2px] shadow-[0_0_44px_rgba(167,80,255,0.55)]">
-              <div className="rounded-[14px] bg-gradient-to-b from-[#1c1140] to-[#120a2e] px-9 py-4">
-                <span className="bg-gradient-to-b from-white to-[#dcc6ff] bg-clip-text text-2xl font-extrabold text-transparent">
-                  {result.name}
-                </span>
-              </div>
-            </div>
-            <p className="mt-6 text-sm text-app-secondary-text">
-              {result.win
-                ? "Added to your Bonus Bank — use it on any game."
-                : "Come back tomorrow for another spin."}
-            </p>
+            {/* wins get the prize chip + bonus-bank note; a loss is headline only */}
+            {result.win && (
+              <>
+                <div className="mt-8 rounded-2xl bg-gradient-to-b from-[#c88bff] via-[#a855ff] to-[#6a1fc4] p-[2px] shadow-[0_0_44px_rgba(167,80,255,0.55)]">
+                  <div className="rounded-[14px] bg-gradient-to-b from-[#1c1140] to-[#120a2e] px-9 py-4">
+                    <span className="bg-gradient-to-b from-white to-[#dcc6ff] bg-clip-text text-2xl font-extrabold text-transparent">
+                      {result.name}
+                    </span>
+                  </div>
+                </div>
+                <p className="mt-6 text-sm text-app-secondary-text">
+                  Added to your Bonus Bank — use it on any game.
+                </p>
+              </>
+            )}
             <button
               onClick={() => setResult(null)}
               className="mt-8 w-full max-w-[240px] rounded-full bg-gradient-to-b from-[#a750ff] to-[#7226c4] py-3 font-bold text-white shadow-[0_0_28px_rgba(167,80,255,0.35)] transition-transform hover:scale-[1.03] active:scale-95"
