@@ -141,6 +141,10 @@ export const SpinWheel = forwardRef<
               <stop offset="55%" stopColor="#f5a623" />
               <stop offset="100%" stopColor="#c47a12" />
             </linearGradient>
+            <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6d5bd0" />
+              <stop offset="100%" stopColor="#2b2166" />
+            </linearGradient>
             <radialGradient id="sheen" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(255,255,255,0)" />
               <stop offset="72%" stopColor="rgba(255,255,255,0.05)" />
@@ -148,8 +152,8 @@ export const SpinWheel = forwardRef<
             </radialGradient>
           </defs>
 
-          {/* single clean outline */}
-          <circle cx={C} cy={C} r={187} fill="none" stroke="rgba(167, 80, 255, 0.45)" strokeWidth={2.5} />
+          {/* rim: thick gradient band around the segments */}
+          <circle cx={C} cy={C} r={193} fill="none" stroke="url(#rim)" strokeWidth={10} />
 
           {prizes.map((p, i) => {
             const a0 = i * seg;
