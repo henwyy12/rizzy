@@ -179,6 +179,14 @@ export const SpinWheel = forwardRef<
               <stop offset="55%" stopColor="#f5a623" />
               <stop offset="100%" stopColor="#c47a12" />
             </linearGradient>
+            <radialGradient id="seg-a" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={R}>
+              <stop offset="35%" stopColor="#5b2bb8" />
+              <stop offset="100%" stopColor="#7b46f0" />
+            </radialGradient>
+            <radialGradient id="seg-b" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={R}>
+              <stop offset="35%" stopColor="#2a1770" />
+              <stop offset="100%" stopColor="#4527c9" />
+            </radialGradient>
             <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#6d5bd0" />
               <stop offset="100%" stopColor="#2b2166" />
@@ -202,7 +210,13 @@ export const SpinWheel = forwardRef<
             // radial labels, flipped on the left half so they stay readable
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
             const icon = ICON[p.kind];
-            const fill = p.hero ? "url(#hero-gold)" : i % 2 ? "#2b2166" : "#221a52";
+            const fill = p.hero
+              ? "url(#hero-gold)"
+              : p.kind === "lose"
+                ? "#262347"
+                : i % 2
+                  ? "url(#seg-a)"
+                  : "url(#seg-b)";
             return (
               <g
                 key={p.id}
