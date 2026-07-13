@@ -79,10 +79,10 @@ export default function WheelPage() {
         <div className="relative flex flex-col items-center">
           {/* logo lockup */}
           <h1 className={`flex items-baseline gap-2 ${slideUp}`}>
-            <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-4xl font-extrabold italic tracking-tight text-transparent sm:text-6xl">
+            <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-[clamp(2.25rem,8vw,3.75rem)] font-extrabold italic tracking-tight text-transparent">
               DAILY
             </span>
-            <span className="font-script text-4xl text-white [text-shadow:0_0_24px_rgba(167,80,255,0.8)] sm:text-6xl">
+            <span className="font-script text-[clamp(2.25rem,8vw,3.75rem)] text-white [text-shadow:0_0_24px_rgba(167,80,255,0.8)]">
               Wheel
             </span>
           </h1>
