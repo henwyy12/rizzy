@@ -117,6 +117,10 @@ export const SpinWheel = forwardRef<
       >
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
           <defs>
+            <linearGradient id="fs-brand" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#ff3d8b" />
+              <stop offset="100%" stopColor="#a750ff" />
+            </linearGradient>
             <linearGradient id="hero-gold" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#ffd86b" />
               <stop offset="55%" stopColor="#f5a623" />
@@ -151,19 +155,37 @@ export const SpinWheel = forwardRef<
                   stroke={p.hero ? "#ffd86b" : "rgba(109, 91, 208, 0.35)"}
                   strokeWidth={p.hero ? 2 : 1.5}
                 />
-                <circle cx={iconPos.x} cy={iconPos.y} r={14} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
-                <text
-                  x={iconPos.x}
-                  y={iconPos.y}
-                  transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill={icon.glyphFill}
-                  fontSize={p.kind === "fs" ? 11 : 14}
-                  fontWeight={800}
-                >
-                  {icon.glyph}
-                </text>
+                {p.kind === "fs" ? (
+                  <text
+                    x={iconPos.x}
+                    y={iconPos.y}
+                    transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fill="url(#fs-brand)"
+                    fontSize={17}
+                    fontWeight={800}
+                    fontStyle="italic"
+                  >
+                    FS
+                  </text>
+                ) : (
+                  <>
+                    <circle cx={iconPos.x} cy={iconPos.y} r={14} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
+                    <text
+                      x={iconPos.x}
+                      y={iconPos.y}
+                      transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fill={icon.glyphFill}
+                      fontSize={14}
+                      fontWeight={800}
+                    >
+                      {icon.glyph}
+                    </text>
+                  </>
+                )}
                 <text
                   x={labelPos.x}
                   y={labelPos.y}
