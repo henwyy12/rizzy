@@ -189,7 +189,9 @@ export default function WheelPage() {
               style={{ gridTemplateRows: openFaq === i ? "1fr" : "0fr" }}
             >
               <div className="overflow-hidden">
-                <p className="px-5 pb-4 text-sm text-app-secondary-text">{item.a}</p>
+                <div className="mx-5 border-t border-app-light-stroke py-4">
+                  <p className="text-sm text-app-secondary-text">{item.a}</p>
+                </div>
               </div>
             </div>
           </div>
