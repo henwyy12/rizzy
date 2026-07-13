@@ -38,6 +38,9 @@ const VARIANT_LABELS: Record<VariantName, string> = {
   sky: "Sky",
   magenta: "Magenta",
   ruby: "Ruby",
+  white: "White",
+  orange: "Orange",
+  red: "Red",
 };
 
 const ICON_OPTIONS: { value: IconName; label: string }[] = [

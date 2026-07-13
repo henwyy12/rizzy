@@ -37,7 +37,10 @@ export type VariantName =
   | "blue"
   | "sky"
   | "magenta"
-  | "ruby";
+  | "ruby"
+  | "white"
+  | "orange"
+  | "red";
 
 // hub/rim are the gradient stops; text is the label colour that reads on it.
 export const VARIANTS: Record<VariantName, { hub: string; rim: string; text: string }> = {
@@ -51,6 +54,9 @@ export const VARIANTS: Record<VariantName, { hub: string; rim: string; text: str
   sky: { hub: "#0e6a8a", rim: "#2fd0e0", text: "#ffffff" },
   magenta: { hub: "#7a1a8a", rim: "#e04ad0", text: "#ffffff" },
   ruby: { hub: "#8a1a2a", rim: "#ff4d6a", text: "#ffffff" },
+  white: { hub: "#cfd8ea", rim: "#ffffff", text: "#16204a" },
+  orange: { hub: "#b5560a", rim: "#ff9d2e", text: "#ffffff" },
+  red: { hub: "#8f1414", rim: "#ff4433", text: "#ffffff" },
 };
 
 // Resolve the background variant for a segment: explicit variant wins, else the
