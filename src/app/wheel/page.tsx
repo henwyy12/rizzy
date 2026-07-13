@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SpinWheel, type WheelPrize } from "@/components/spin-wheel";
 import { PRIZES } from "@/lib/wheel-prizes";
+import { loadWheelTheme, type SavedWheelTheme } from "@/lib/wheel-theme-store";
 
 // deterministic burst pattern for the result screen (SSR-safe)
 const COINS = [
@@ -39,6 +40,18 @@ export default function WheelPage() {
   const [spinsLeft, setSpinsLeft] = useState(2);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<WheelPrize | null>(null);
+  // design applied from the theme lab (browser-persisted); null = default look
+  const [saved, setSaved] = useState<SavedWheelTheme | null>(null);
+
+  useEffect(() => setSaved(loadWheelTheme()), []);
+
+  const prizes = saved
+    ? PRIZES.map((p) => ({
+        ...p,
+        variant: saved.segments[p.id]?.variant,
+        icon: saved.segments[p.id]?.icon,
+      }))
+    : PRIZES;
 
   const chrome = `transition-opacity duration-500 ${spinning ? "opacity-0" : "opacity-100"}`;
 
@@ -63,7 +76,8 @@ export default function WheelPage() {
 
           <div className="mt-1 w-full max-w-[540px]">
             <SpinWheel
-              prizes={PRIZES}
+              prizes={prizes}
+              rimVariant={saved?.rimVariant}
               disabled={spinsLeft === 0}
               onSpinStart={() => {
                 setSpinning(true);
