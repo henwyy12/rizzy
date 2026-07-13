@@ -68,8 +68,8 @@ function resolveVariant(p: WheelPrize, i: number): VariantName {
   return i % 2 ? "violet" : "deep-violet";
 }
 
-const TURNS = 6;
-export const SPIN_MS = 7000;
+const TURNS = 7;
+export const SPIN_MS = 9000;
 const SIZE = 400;
 const C = SIZE / 2;
 const R = 180; // outer radius of segments
