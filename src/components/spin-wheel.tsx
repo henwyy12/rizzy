@@ -121,8 +121,15 @@ export const SpinWheel = forwardRef<
     disabled?: boolean;
     onSpinStart?: () => void;
     onDone: (prize: WheelPrize) => void;
+    // design mode: freeze drift/spin and let segments be clicked for editing
+    frozen?: boolean;
+    selectedId?: string | null;
+    onSegmentClick?: (prize: WheelPrize) => void;
   }
->(function SpinWheel({ prizes, disabled, onSpinStart, onDone }, ref) {
+>(function SpinWheel(
+  { prizes, disabled, onSpinStart, onDone, frozen, selectedId, onSegmentClick },
+  ref,
+) {
   const [spinning, setSpinning] = useState(false);
   const [blurred, setBlurred] = useState(false);
   const [hovered, setHovered] = useState<WheelPrize | null>(null);
@@ -136,7 +143,7 @@ export const SpinWheel = forwardRef<
 
   // slow idle drift while not spinning
   useEffect(() => {
-    if (spinning) return;
+    if (spinning || frozen) return;
     const el = wheelEl.current;
     if (!el) return;
     el.style.transition = "none";
@@ -150,12 +157,12 @@ export const SpinWheel = forwardRef<
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [spinning]);
+  }, [spinning, frozen]);
 
   const seg = 360 / prizes.length;
 
   function spin() {
-    if (spinning || disabled) return;
+    if (spinning || disabled || frozen) return;
     const el = wheelEl.current;
     if (!el) return;
     const i = pickWeighted(prizes);
@@ -245,22 +252,28 @@ export const SpinWheel = forwardRef<
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
             const icon = ICON[p.kind];
             const fill = `url(#seg-${i})`;
+            const selected = selectedId === p.id;
+            const dimmed = onSegmentClick
+              ? selectedId != null && !selected
+              : hovered != null && hovered.id !== p.id;
             return (
               <g
                 key={p.id}
-                onMouseEnter={() => !spinning && setHovered(p)}
+                onMouseEnter={() => !spinning && !onSegmentClick && setHovered(p)}
                 onMouseLeave={() => setHovered((h) => (h?.id === p.id ? null : h))}
+                onClick={() => onSegmentClick?.(p)}
                 style={{
-                  filter: hovered?.id === p.id ? "brightness(1.3)" : "none",
-                  opacity: hovered && hovered.id !== p.id ? 0.55 : 1,
+                  cursor: onSegmentClick ? "pointer" : "default",
+                  filter: hovered?.id === p.id || selected ? "brightness(1.3)" : "none",
+                  opacity: dimmed ? 0.55 : 1,
                   transition: "filter 150ms, opacity 150ms",
                 }}
               >
                 <path
                   d={segmentPath(a0, a1)}
                   fill={fill}
-                  stroke={fill}
-                  strokeWidth={CORNER * 2}
+                  stroke={selected ? "#ffffff" : fill}
+                  strokeWidth={selected ? CORNER * 2 + 1 : CORNER * 2}
                   strokeLinejoin="round"
                 />
                 {p.kind === "fs" ? (
