@@ -3,24 +3,22 @@
 import { useState } from "react";
 import { SpinWheel, type WheelPrize } from "@/components/spin-wheel";
 
-// Real weights from the admin table (normal + juiced), interleaved so prize
-// kinds distribute around the wheel.
-type Prize = WheelPrize & { juiced: number };
-
-const PRIZES: Prize[] = [
-  { id: "lose", label: "NO WIN", name: "Better luck next time", kind: "lose", win: false, weight: 300000, juiced: 100000 },
-  { id: "fs10", label: "10", name: "10 Free Spins", kind: "fs", win: true, weight: 250000, juiced: 300000 },
-  { id: "m10", label: "+10%", name: "10% Deposit Match", kind: "match", win: true, weight: 120000, juiced: 130000 },
-  { id: "c100", label: "$100", name: "$100 Cash", kind: "cash", win: true, weight: 2400, juiced: 3000 },
-  { id: "fs100", label: "100", name: "100 Free Spins", kind: "fs", win: true, weight: 180000, juiced: 250000 },
-  { id: "m20", label: "+20%", name: "20% Deposit Match", kind: "match", win: true, weight: 50000, juiced: 60000 },
-  { id: "c500", label: "$500", name: "$500 Cash", kind: "cash", win: true, weight: 500, juiced: 700 },
-  { id: "fs500", label: "500", name: "500 Free Spins", kind: "fs", win: true, weight: 60000, juiced: 100000 },
-  { id: "m50", label: "+50%", name: "50% Deposit Match", kind: "match", win: true, weight: 12000, juiced: 18000 },
-  { id: "c1000", label: "$1,000", name: "$1,000 Cash", kind: "cash", win: true, weight: 99, juiced: 200 },
-  { id: "fs1000", label: "1,000", name: "1,000 Free Spins", kind: "fs", win: true, weight: 20000, juiced: 30000 },
-  { id: "m100", label: "+100%", name: "100% Deposit Match", kind: "match", win: true, weight: 5000, juiced: 8000 },
-  { id: "c10k", label: "$10,000", name: "$10,000 Cash", kind: "cash", win: true, weight: 1, juiced: 1, hero: true },
+// Real weights from the admin table, interleaved so prize kinds distribute
+// around the wheel.
+const PRIZES: WheelPrize[] = [
+  { id: "lose", label: "NO WIN", name: "Better luck next time", kind: "lose", win: false, weight: 300000 },
+  { id: "fs10", label: "10", name: "10 Free Spins", kind: "fs", win: true, weight: 250000 },
+  { id: "m10", label: "+10%", name: "10% Deposit Match", kind: "match", win: true, weight: 120000 },
+  { id: "c100", label: "$100", name: "$100 Cash", kind: "cash", win: true, weight: 2400 },
+  { id: "fs100", label: "100", name: "100 Free Spins", kind: "fs", win: true, weight: 180000 },
+  { id: "m20", label: "+20%", name: "20% Deposit Match", kind: "match", win: true, weight: 50000 },
+  { id: "c500", label: "$500", name: "$500 Cash", kind: "cash", win: true, weight: 500 },
+  { id: "fs500", label: "500", name: "500 Free Spins", kind: "fs", win: true, weight: 60000 },
+  { id: "m50", label: "+50%", name: "50% Deposit Match", kind: "match", win: true, weight: 12000 },
+  { id: "c1000", label: "$1,000", name: "$1,000 Cash", kind: "cash", win: true, weight: 99 },
+  { id: "fs1000", label: "1,000", name: "1,000 Free Spins", kind: "fs", win: true, weight: 20000 },
+  { id: "m100", label: "+100%", name: "100% Deposit Match", kind: "match", win: true, weight: 5000 },
+  { id: "c10k", label: "$10,000", name: "$10,000 Cash", kind: "cash", win: true, weight: 1, hero: true },
 ];
 
 // deterministic burst pattern for the result screen (SSR-safe)
@@ -53,16 +51,10 @@ const FAQ = [
 ];
 
 export default function WheelPage() {
-  const [mode, setMode] = useState<"normal" | "juiced">("normal");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [spinsLeft, setSpinsLeft] = useState(2);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<WheelPrize | null>(null);
-
-  const prizes = PRIZES.map((p) => ({
-    ...p,
-    weight: mode === "juiced" ? p.juiced : p.weight,
-  }));
 
   const chrome = `transition-opacity duration-500 ${spinning ? "opacity-0" : "opacity-100"}`;
 
@@ -75,31 +67,8 @@ export default function WheelPage() {
         <div className="pointer-events-none absolute -right-16 bottom-10 h-48 w-48 rounded-full bg-[#ff3d8b]/10 blur-3xl" />
 
         <div className="relative flex flex-col items-center">
-          {/* normal / juiced tabs, standing in for the reference's tier tabs */}
-          <div className={`flex rounded-xl bg-app-dark-200/70 p-1 ${chrome}`}>
-            {(["normal", "juiced"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                disabled={spinning}
-                className={`rounded-lg px-5 py-1.5 text-sm font-semibold capitalize transition-colors ${
-                  mode === m
-                    ? "bg-gradient-to-b from-[#a750ff] to-[#7226c4] text-white"
-                    : "text-app-secondary-text hover:text-app-main-text"
-                }`}
-              >
-                {m}
-                {m === "juiced" && (
-                  <span className="ml-1.5 rounded bg-[#ffc42e] px-1 py-px text-[9px] font-extrabold text-[#402c00] align-middle">
-                    VIP
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-
           {/* logo lockup */}
-          <h1 className="mt-5 flex items-baseline gap-2">
+          <h1 className="flex items-baseline gap-2">
             <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-4xl font-extrabold italic tracking-tight text-transparent sm:text-6xl">
               DAILY
             </span>
@@ -110,7 +79,7 @@ export default function WheelPage() {
 
           <div className="mt-1 w-full max-w-[540px]">
             <SpinWheel
-              prizes={prizes}
+              prizes={PRIZES}
               disabled={spinsLeft === 0}
               onSpinStart={() => {
                 setSpinning(true);
