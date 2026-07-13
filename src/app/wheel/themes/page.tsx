@@ -5,18 +5,46 @@ import Link from "next/link";
 import {
   SpinWheel,
   VARIANTS,
+  type IconName,
   type VariantName,
 } from "@/components/spin-wheel";
 import { PRIZES } from "@/lib/wheel-prizes";
 
 // A theme sets the whole wheel at once: the two alternating win-segment
-// variants. Jackpot stays gold and no-win stays dead across every theme.
-const THEMES: { name: string; a: VariantName; b: VariantName }[] = [
-  { name: "Purple", a: "violet", b: "deep-violet" },
-  { name: "Ocean", a: "blue", b: "sky" },
-  { name: "Candy", a: "pink", b: "magenta" },
-  { name: "Emerald", a: "green", b: "deep-violet" },
-  { name: "Sunset", a: "ruby", b: "pink" },
+// variants, plus the jackpot and no-win backgrounds.
+const THEMES: {
+  name: string;
+  a: VariantName;
+  b: VariantName;
+  hero: VariantName;
+  lose: VariantName;
+}[] = [
+  { name: "Purple", a: "violet", b: "deep-violet", hero: "gold-hero", lose: "dead" },
+  { name: "Ocean", a: "blue", b: "sky", hero: "gold-hero", lose: "dead" },
+  { name: "Candy", a: "pink", b: "magenta", hero: "gold-hero", lose: "dead" },
+  { name: "Emerald", a: "green", b: "deep-violet", hero: "gold-hero", lose: "dead" },
+  { name: "Sunset", a: "ruby", b: "pink", hero: "gold-hero", lose: "dead" },
+];
+
+const VARIANT_LABELS: Record<VariantName, string> = {
+  violet: "Violet",
+  "deep-violet": "Deep violet",
+  "gold-hero": "Gold hero",
+  dead: "Dead grey",
+  green: "Green",
+  pink: "Pink",
+  blue: "Blue",
+  sky: "Sky",
+  magenta: "Magenta",
+  ruby: "Ruby",
+};
+
+const ICON_OPTIONS: { value: IconName; label: string }[] = [
+  { value: "fs", label: "FS" },
+  { value: "cash", label: "$ coin" },
+  { value: "match", label: "% coin" },
+  { value: "lose", label: "× no win" },
+  { value: "none", label: "none" },
 ];
 
 const swatch = (name: VariantName) => {
@@ -24,32 +52,37 @@ const swatch = (name: VariantName) => {
   return `radial-gradient(circle at 50% 120%, ${v.rim} 25%, ${v.hub} 100%)`;
 };
 
+const selectCls =
+  "w-full rounded-lg border border-app-light-stroke bg-app-dark-200 px-2 py-1.5 text-sm text-app-main-text";
+
 export default function ThemesPage() {
   const [themeIdx, setThemeIdx] = useState(0);
-  const [overrides, setOverrides] = useState<Record<string, VariantName>>({});
+  const [bgOverrides, setBgOverrides] = useState<Record<string, VariantName>>({});
+  const [iconOverrides, setIconOverrides] = useState<Record<string, IconName>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const theme = THEMES[themeIdx];
 
-  // resolve each segment: manual override wins, else the theme's assignment
   const themeVariant = (
     p: (typeof PRIZES)[number],
     i: number,
   ): VariantName =>
-    p.hero ? "gold-hero" : p.kind === "lose" ? "dead" : i % 2 ? theme.a : theme.b;
+    p.hero ? theme.hero : p.kind === "lose" ? theme.lose : i % 2 ? theme.a : theme.b;
 
   const prizes = PRIZES.map((p, i) => ({
     ...p,
-    variant: overrides[p.id] ?? themeVariant(p, i),
+    variant: bgOverrides[p.id] ?? themeVariant(p, i),
+    icon: iconOverrides[p.id] ?? p.kind,
   }));
-
-  const selected = prizes.find((p) => p.id === selectedId) ?? null;
 
   function pickTheme(i: number) {
     setThemeIdx(i);
-    setOverrides({});
-    setSelectedId(null);
+    setBgOverrides({});
+    setIconOverrides({});
   }
+
+  const dirty =
+    Object.keys(bgOverrides).length > 0 || Object.keys(iconOverrides).length > 0;
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8">
@@ -63,14 +96,14 @@ export default function ThemesPage() {
         </Link>
       </div>
       <p className="mt-1 text-sm text-app-secondary-text">
-        Pick a theme to recolour the whole wheel, then click any segment to
-        override just that one.
+        Pick a theme to recolour the whole wheel, then fine-tune any prize&rsquo;s
+        icon and background in the table.
       </p>
 
-      <div className="mt-6 grid gap-8 md:grid-cols-[1fr_320px]">
+      <div className="mt-6 grid gap-8 lg:grid-cols-[400px_1fr]">
         {/* the wheel, frozen for editing */}
-        <div className="flex items-center justify-center rounded-3xl border border-app-light-stroke bg-gradient-to-b from-[#0d0930] to-app-dark-100 p-6">
-          <div className="w-full max-w-[420px]">
+        <div className="flex flex-col items-center gap-5 rounded-3xl border border-app-light-stroke bg-gradient-to-b from-[#0d0930] to-app-dark-100 p-6">
+          <div className="w-full max-w-[360px]">
             <SpinWheel
               prizes={prizes}
               rimVariant={theme.a}
@@ -82,84 +115,90 @@ export default function ThemesPage() {
               onDone={() => {}}
             />
           </div>
+          <div className="flex flex-wrap justify-center gap-2">
+            {THEMES.map((t, i) => (
+              <button
+                key={t.name}
+                onClick={() => pickTheme(i)}
+                className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+                  themeIdx === i
+                    ? "border-app-purple bg-app-dark-200 text-app-main-text"
+                    : "border-app-light-stroke text-app-secondary-text hover:text-app-main-text"
+                }`}
+              >
+                <span className="flex gap-1">
+                  <span className="h-3.5 w-3.5 rounded-full" style={{ background: swatch(t.a) }} />
+                  <span className="h-3.5 w-3.5 rounded-full" style={{ background: swatch(t.b) }} />
+                </span>
+                {t.name}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* controls */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-sm font-semibold">Theme</h2>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {THEMES.map((t, i) => (
-                <button
-                  key={t.name}
-                  onClick={() => pickTheme(i)}
-                  className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-                    themeIdx === i
-                      ? "border-app-purple bg-app-dark-200 text-app-main-text"
-                      : "border-app-light-stroke text-app-secondary-text hover:text-app-main-text"
-                  }`}
-                >
-                  <span className="flex gap-1">
-                    <span className="h-3.5 w-3.5 rounded-full" style={{ background: swatch(t.a) }} />
-                    <span className="h-3.5 w-3.5 rounded-full" style={{ background: swatch(t.b) }} />
-                  </span>
-                  {t.name}
-                </button>
-              ))}
+        {/* per-prize table */}
+        <div>
+          <div className="overflow-hidden rounded-xl border border-app-light-stroke">
+            <div className="grid grid-cols-[1.4fr_1fr_1.3fr] gap-3 bg-app-dark-100 px-4 py-2.5 text-xs font-semibold text-app-secondary-text">
+              <span>Prize</span>
+              <span>Icon</span>
+              <span>Background</span>
             </div>
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold">
-              {selected ? `Override: ${selected.name}` : "Override a segment"}
-            </h2>
-            {selected ? (
-              <>
-                <div className="mt-2 grid grid-cols-5 gap-2">
-                  {(Object.keys(VARIANTS) as VariantName[]).map((name) => (
-                    <button
-                      key={name}
-                      title={name}
-                      onClick={() =>
-                        setOverrides((o) => ({ ...o, [selected.id]: name }))
-                      }
-                      className={`h-10 rounded-lg border-2 transition-transform hover:scale-105 ${
-                        prizes.find((p) => p.id === selected.id)?.variant === name
-                          ? "border-white"
-                          : "border-transparent"
-                      }`}
-                      style={{ background: swatch(name) }}
-                    />
+            {prizes.map((p) => (
+              <div
+                key={p.id}
+                onMouseEnter={() => setSelectedId(p.id)}
+                onMouseLeave={() => setSelectedId((c) => (c === p.id ? null : c))}
+                className={`grid grid-cols-[1.4fr_1fr_1.3fr] items-center gap-3 border-t border-app-light-stroke px-4 py-2.5 ${
+                  selectedId === p.id ? "bg-app-dark-200/60" : ""
+                }`}
+              >
+                <span className="text-sm">{p.name}</span>
+                <select
+                  className={selectCls}
+                  value={p.icon}
+                  onChange={(e) =>
+                    setIconOverrides((o) => ({ ...o, [p.id]: e.target.value as IconName }))
+                  }
+                >
+                  {ICON_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
                   ))}
-                </div>
-                {overrides[selected.id] && (
-                  <button
-                    onClick={() =>
-                      setOverrides((o) => {
-                        const next = { ...o };
-                        delete next[selected.id];
-                        return next;
-                      })
+                </select>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-5 w-5 shrink-0 rounded"
+                    style={{ background: swatch(p.variant) }}
+                  />
+                  <select
+                    className={selectCls}
+                    value={p.variant}
+                    onChange={(e) =>
+                      setBgOverrides((o) => ({ ...o, [p.id]: e.target.value as VariantName }))
                     }
-                    className="mt-3 text-xs text-app-secondary-text underline-offset-2 hover:text-app-main-text hover:underline"
                   >
-                    reset to theme
-                  </button>
-                )}
-              </>
-            ) : (
-              <p className="mt-2 text-sm text-app-secondary-text">
-                Click a segment on the wheel to change its background.
-              </p>
-            )}
+                    {(Object.keys(VARIANTS) as VariantName[]).map((name) => (
+                      <option key={name} value={name}>
+                        {VARIANT_LABELS[name]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {Object.keys(overrides).length > 0 && (
+          {dirty && (
             <button
-              onClick={() => setOverrides({})}
-              className="text-xs text-app-secondary-text underline-offset-2 hover:text-app-main-text hover:underline"
+              onClick={() => {
+                setBgOverrides({});
+                setIconOverrides({});
+              }}
+              className="mt-3 text-xs text-app-secondary-text underline-offset-2 hover:text-app-main-text hover:underline"
             >
-              clear all overrides
+              reset everything to the theme
             </button>
           )}
         </div>
