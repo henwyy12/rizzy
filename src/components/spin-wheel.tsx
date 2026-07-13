@@ -133,9 +133,8 @@ export const SpinWheel = forwardRef<
             </radialGradient>
           </defs>
 
-          {/* outer bezel */}
-          <circle cx={C} cy={C} r={197} fill="none" stroke="#14102e" strokeWidth={13} />
-          <circle cx={C} cy={C} r={189.5} fill="none" stroke="rgba(167, 80, 255, 0.45)" strokeWidth={1.5} />
+          {/* single clean outline */}
+          <circle cx={C} cy={C} r={187} fill="none" stroke="rgba(167, 80, 255, 0.45)" strokeWidth={2.5} />
 
           {prizes.map((p, i) => {
             const a0 = i * seg;
@@ -204,12 +203,6 @@ export const SpinWheel = forwardRef<
 
           {/* subtle radial sheen over the face */}
           <circle cx={C} cy={C} r={R} fill="url(#sheen)" pointerEvents="none" />
-
-          {/* rim lights, one per segment boundary */}
-          {prizes.map((p, i) => {
-            const pos = polar(i * seg, 197);
-            return <circle key={p.id} cx={pos.x} cy={pos.y} r={2.5} fill={i % 2 ? "#a750ff" : "#ffc42e"} />;
-          })}
 
           {/* hub base under the button */}
           <circle cx={C} cy={C} r={54} fill="#14102e" />
