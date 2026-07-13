@@ -235,6 +235,19 @@ export const SpinWheel = forwardRef<
                   >
                     FS
                   </text>
+                ) : p.kind === "lose" ? (
+                  <text
+                    x={iconPos.x}
+                    y={iconPos.y}
+                    transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fill="#ff4d4d"
+                    fontSize={18}
+                    fontWeight={800}
+                  >
+                    ×
+                  </text>
                 ) : p.kind === "cash" ? (
                   <use
                     href="#usd-coin"
