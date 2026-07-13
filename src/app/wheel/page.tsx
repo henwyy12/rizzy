@@ -120,9 +120,8 @@ export default function WheelPage() {
           >
             <span className={`h-2.5 w-2.5 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e] shadow-[0_0_8px_rgba(31,201,142,0.8)]" : "bg-app-secondary-text"}`} />
             {spinsLeft > 0 ? (
-              <span>
-                <span className="text-app-main-text">{spinsLeft}</span>{" "}
-                <span className="text-app-secondary-text">spin{spinsLeft === 1 ? "" : "s"} available</span>
+              <span className="text-[#1fc98e]">
+                {spinsLeft} spin{spinsLeft === 1 ? "" : "s"} available
               </span>
             ) : (
               <span className="text-app-secondary-text">No spins left — come back tomorrow</span>
