@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { SpinWheel, type WheelPrize } from "@/components/spin-wheel";
 import { PRIZES } from "@/lib/wheel-prizes";
 
@@ -148,6 +149,13 @@ export default function WheelPage() {
       >
         demo: reset spins
       </button>
+
+      <Link
+        href="/wheel/themes"
+        className={`mt-2 text-xs text-app-purple underline-offset-2 transition-colors hover:text-app-main-text hover:underline ${chrome}`}
+      >
+        open the theme design lab &rarr;
+      </Link>
 
       {/* result takeover */}
       {result && (
