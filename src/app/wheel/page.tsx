@@ -206,7 +206,7 @@ export default function WheelPage() {
               />
             ))}
 
-          <div className="relative flex w-full max-w-md flex-col items-center text-center">
+          <div className="relative flex w-full max-w-xl flex-col items-center text-center">
             <p
               className={`font-extrabold uppercase italic tracking-tight text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)] ${
                 result.win ? "text-7xl sm:text-8xl" : "text-5xl sm:text-6xl"
