@@ -52,8 +52,27 @@ export default function WheelPage() {
   const [result, setResult] = useState<WheelPrize | null>(null);
   // design applied from the theme lab (browser-persisted); null = default look
   const [saved, setSaved] = useState<SavedWheelTheme | null>(null);
+  // ticking countdown to the next daily reset (00:00 UTC)
+  const [countdown, setCountdown] = useState("--:--:--");
 
   useEffect(() => setSaved(loadWheelTheme()), []);
+
+  useEffect(() => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const tick = () => {
+      const now = new Date();
+      const nextReset = Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + 1,
+      );
+      const s = Math.max(0, Math.floor((nextReset - now.getTime()) / 1000));
+      setCountdown(`${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const prizes = saved
     ? PRIZES.map((p) => ({
@@ -103,18 +122,25 @@ export default function WheelPage() {
             />
           </div>
 
-          <div
-            className={`mt-6 flex items-center gap-2.5 rounded-full border border-app-light-stroke bg-app-dark-100/80 px-6 py-2.5 text-base font-semibold ${slideDown}`}
-          >
-            <span className={`h-2.5 w-2.5 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e] shadow-[0_0_8px_rgba(31,201,142,0.8)]" : "bg-app-secondary-text"}`} />
-            {spinsLeft > 0 ? (
+          {spinsLeft > 0 ? (
+            <div
+              className={`mt-6 flex items-center gap-2.5 rounded-full border border-app-light-stroke bg-app-dark-100/80 px-6 py-2.5 text-base font-semibold ${slideDown}`}
+            >
+              <span className="h-2.5 w-2.5 rounded-full bg-[#1fc98e] shadow-[0_0_8px_rgba(31,201,142,0.8)]" />
               <span className="text-[#1fc98e]">
                 {spinsLeft} spin{spinsLeft === 1 ? "" : "s"} available
               </span>
-            ) : (
-              <span className="text-app-secondary-text">No spins left — come back tomorrow</span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div
+              className={`mt-6 flex items-center gap-3 rounded-full border border-app-light-stroke bg-app-dark-100/80 py-2 pl-5 pr-2.5 ${slideDown}`}
+            >
+              <span className="text-sm text-app-secondary-text">Next spin in</span>
+              <span className="rounded-full bg-app-dark-700/60 px-3 py-1 text-lg font-bold tabular-nums tracking-wide text-app-main-text">
+                {countdown}
+              </span>
+            </div>
+          )}
 
           {/* prize legend, like the reference's bottom strip */}
           <div className={`mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-app-secondary-text ${slideDown}`}>
