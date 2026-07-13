@@ -15,10 +15,47 @@ export type WheelPrize = {
   weight: number;
   kind: "lose" | "fs" | "match" | "cash";
   hero?: boolean; // the one glowing gold jackpot segment
+  variant?: VariantName; // segment background; falls back to the default alternation
   win: boolean;
 };
 
 export type SpinWheelHandle = { spin: () => void };
+
+// A "variant" is a named segment background. Each is a depth gradient — darker
+// at the hub, brighter at the rim — so no segment can end up looking flat.
+export type VariantName =
+  | "violet"
+  | "deep-violet"
+  | "gold-hero"
+  | "dead"
+  | "green"
+  | "pink"
+  | "blue"
+  | "sky"
+  | "magenta"
+  | "ruby";
+
+export const VARIANTS: Record<VariantName, { hub: string; rim: string }> = {
+  violet: { hub: "#5b2bb8", rim: "#7b46f0" },
+  "deep-violet": { hub: "#2a1770", rim: "#4527c9" },
+  "gold-hero": { hub: "#c47a12", rim: "#ffd15e" },
+  dead: { hub: "#1e1b38", rim: "#2a2648" },
+  green: { hub: "#0c5a41", rim: "#1fc98e" },
+  pink: { hub: "#a01e5a", rim: "#ff5aa0" },
+  blue: { hub: "#123a8a", rim: "#3a7bff" },
+  sky: { hub: "#0e6a8a", rim: "#2fd0e0" },
+  magenta: { hub: "#7a1a8a", rim: "#e04ad0" },
+  ruby: { hub: "#8a1a2a", rim: "#ff4d6a" },
+};
+
+// Resolve the background variant for a segment: explicit variant wins, else the
+// default look (gold jackpot, dead no-win, alternating violets).
+function resolveVariant(p: WheelPrize, i: number): VariantName {
+  if (p.variant) return p.variant;
+  if (p.hero) return "gold-hero";
+  if (p.kind === "lose") return "dead";
+  return i % 2 ? "violet" : "deep-violet";
+}
 
 const TURNS = 6;
 export const SPIN_MS = 7000;
@@ -174,19 +211,16 @@ export const SpinWheel = forwardRef<
               <stop offset="0%" stopColor="#ff3d8b" />
               <stop offset="100%" stopColor="#a750ff" />
             </linearGradient>
-            <linearGradient id="hero-gold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#ffd86b" />
-              <stop offset="55%" stopColor="#f5a623" />
-              <stop offset="100%" stopColor="#c47a12" />
-            </linearGradient>
-            <radialGradient id="seg-a" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={R}>
-              <stop offset="35%" stopColor="#5b2bb8" />
-              <stop offset="100%" stopColor="#7b46f0" />
-            </radialGradient>
-            <radialGradient id="seg-b" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={R}>
-              <stop offset="35%" stopColor="#2a1770" />
-              <stop offset="100%" stopColor="#4527c9" />
-            </radialGradient>
+            {/* one depth gradient per segment, from its resolved variant */}
+            {prizes.map((p, i) => {
+              const v = VARIANTS[resolveVariant(p, i)];
+              return (
+                <radialGradient key={p.id} id={`seg-${i}`} gradientUnits="userSpaceOnUse" cx={C} cy={C} r={R}>
+                  <stop offset="35%" stopColor={v.hub} />
+                  <stop offset="100%" stopColor={v.rim} />
+                </radialGradient>
+              );
+            })}
             <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#6d5bd0" />
               <stop offset="100%" stopColor="#2b2166" />
@@ -210,13 +244,7 @@ export const SpinWheel = forwardRef<
             // radial labels, flipped on the left half so they stay readable
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
             const icon = ICON[p.kind];
-            const fill = p.hero
-              ? "url(#hero-gold)"
-              : p.kind === "lose"
-                ? "#262347"
-                : i % 2
-                  ? "url(#seg-a)"
-                  : "url(#seg-b)";
+            const fill = `url(#seg-${i})`;
             return (
               <g
                 key={p.id}
