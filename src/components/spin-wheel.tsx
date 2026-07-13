@@ -1,23 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 export type WheelPrize = {
   id: string;
-  label: string; // short label on the wheel segment
-  name: string; // full name for the result modal
+  label: string; // value shown on the segment
+  name: string; // full name for the result screen
   weight: number;
-  color: string;
-  darkText?: boolean;
+  kind: "lose" | "fs" | "match" | "cash";
+  hero?: boolean; // the one glowing gold jackpot segment
   win: boolean;
 };
 
+export type SpinWheelHandle = { spin: () => void };
+
 const TURNS = 6;
-const SPIN_MS = 6000;
+export const SPIN_MS = 7000;
 const SIZE = 400;
 const C = SIZE / 2;
-const R = 185;
-const LABEL_R = 136;
+const R = 182;
+const ICON_R = 144;
+const LABEL_R = 98;
+const POINTER_DEG = 90; // pointer sits at 3 o'clock
 
 // rounded to avoid SSR/client float serialization mismatches
 const round = (n: number) => Math.round(n * 1000) / 1000;
@@ -44,22 +54,29 @@ function pickWeighted(prizes: WheelPrize[]) {
   return prizes.length - 1;
 }
 
-export function SpinWheel({
-  prizes,
-  disabled,
-  onSpinStart,
-  onDone,
-}: {
-  prizes: WheelPrize[];
-  disabled?: boolean;
-  onSpinStart?: () => void;
-  onDone: (prize: WheelPrize) => void;
-}) {
+// small coin-style icon disc per prize kind
+const ICON = {
+  lose: { fill: "#1a1440", glyph: "×", glyphFill: "#8a8a8a" },
+  fs: { fill: "#a750ff", glyph: "FS", glyphFill: "#ffffff" },
+  match: { fill: "#1fc98e", glyph: "%", glyphFill: "#03130d" },
+  cash: { fill: "#ffc42e", glyph: "$", glyphFill: "#402c00" },
+} as const;
+
+export const SpinWheel = forwardRef<
+  SpinWheelHandle,
+  {
+    prizes: WheelPrize[];
+    disabled?: boolean;
+    onSpinStart?: () => void;
+    onDone: (prize: WheelPrize) => void;
+  }
+>(function SpinWheel({ prizes, disabled, onSpinStart, onDone }, ref) {
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [blurred, setBlurred] = useState(false);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => () => clearTimeout(timer.current ?? undefined), []);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const seg = 360 / prizes.length;
 
@@ -70,17 +87,23 @@ export function SpinWheel({
     // land the pointer inside segment i, with some jitter off dead-center
     const center = i * seg + seg / 2;
     const jitter = (Math.random() - 0.5) * seg * 0.6;
-    const landing = (360 - center + jitter + 360) % 360;
+    const landing = (POINTER_DEG - center + jitter + 720) % 360;
     const delta = (landing - (rotation % 360) + 360) % 360;
     setSpinning(true);
     onSpinStart?.();
     setRotation(rotation + TURNS * 360 + delta);
-    // resolve on a timer, not transitionend — throttled tabs can swallow the event
-    timer.current = setTimeout(() => {
-      setSpinning(false);
-      onDone(prize);
-    }, SPIN_MS + 200);
+    // resolve on timers, not transitionend — throttled tabs can swallow the event
+    timers.current.push(
+      setTimeout(() => setBlurred(true), 400),
+      setTimeout(() => setBlurred(false), SPIN_MS - 1800),
+      setTimeout(() => {
+        setSpinning(false);
+        onDone(prize);
+      }, SPIN_MS + 200),
+    );
   }
+
+  useImperativeHandle(ref, () => ({ spin }));
 
   return (
     <div className="relative aspect-square w-full max-w-[420px]">
@@ -88,63 +111,106 @@ export function SpinWheel({
         className="h-full w-full"
         style={{
           transform: `rotate(${rotation}deg)`,
-          transition: `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.8, 0.13, 1)`,
+          transition: `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.8, 0.13, 1), filter 300ms`,
+          filter: blurred ? "blur(2.5px)" : "none",
         }}
       >
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
-          {/* outer rim */}
-          <circle cx={C} cy={C} r={196} fill="none" stroke="#14142f" strokeWidth={10} />
+          <defs>
+            <linearGradient id="hero-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#ffd86b" />
+              <stop offset="55%" stopColor="#f5a623" />
+              <stop offset="100%" stopColor="#c47a12" />
+            </linearGradient>
+            <radialGradient id="sheen" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+              <stop offset="72%" stopColor="rgba(255,255,255,0.05)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.14)" />
+            </radialGradient>
+          </defs>
+
+          {/* outer bezel */}
+          <circle cx={C} cy={C} r={197} fill="none" stroke="#14102e" strokeWidth={13} />
+          <circle cx={C} cy={C} r={189.5} fill="none" stroke="rgba(167, 80, 255, 0.45)" strokeWidth={1.5} />
+
           {prizes.map((p, i) => {
             const a0 = i * seg;
             const a1 = a0 + seg;
             const mid = a0 + seg / 2;
-            const pos = polar(mid, LABEL_R);
+            const iconPos = polar(mid, ICON_R);
+            const labelPos = polar(mid, LABEL_R);
             // radial labels, flipped on the left half so they stay readable
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
+            const icon = ICON[p.kind];
+            const fill = p.hero ? "url(#hero-gold)" : i % 2 ? "#2b2166" : "#221a52";
             return (
               <g key={p.id}>
-                <path d={segmentPath(a0, a1)} fill={p.color} stroke="#000017" strokeWidth={2} />
+                <path
+                  d={segmentPath(a0, a1)}
+                  fill={fill}
+                  stroke={p.hero ? "#ffd86b" : "rgba(109, 91, 208, 0.35)"}
+                  strokeWidth={p.hero ? 2 : 1.5}
+                />
+                <circle cx={iconPos.x} cy={iconPos.y} r={14} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
                 <text
-                  x={pos.x}
-                  y={pos.y}
-                  transform={`rotate(${rot} ${pos.x} ${pos.y})`}
+                  x={iconPos.x}
+                  y={iconPos.y}
+                  transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fill={p.darkText ? "#000017" : "#ffffff"}
-                  fontSize={15}
-                  fontWeight={700}
+                  fill={icon.glyphFill}
+                  fontSize={p.kind === "fs" ? 11 : 14}
+                  fontWeight={800}
+                >
+                  {icon.glyph}
+                </text>
+                <text
+                  x={labelPos.x}
+                  y={labelPos.y}
+                  transform={`rotate(${rot} ${labelPos.x} ${labelPos.y})`}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill={p.hero ? "#402c00" : p.kind === "lose" ? "#8a8a8a" : "#ffffff"}
+                  fontSize={p.label.length > 4 ? 13 : 16}
+                  fontWeight={800}
                 >
                   {p.label}
                 </text>
               </g>
             );
           })}
+
+          {/* subtle radial sheen over the face */}
+          <circle cx={C} cy={C} r={R} fill="url(#sheen)" pointerEvents="none" />
+
           {/* rim lights, one per segment boundary */}
           {prizes.map((p, i) => {
-            const pos = polar(i * seg, 196);
-            return <circle key={p.id} cx={pos.x} cy={pos.y} r={3.5} fill={i % 2 ? "#a750ff" : "#ffc42e"} />;
+            const pos = polar(i * seg, 197);
+            return <circle key={p.id} cx={pos.x} cy={pos.y} r={2.5} fill={i % 2 ? "#a750ff" : "#ffc42e"} />;
           })}
-          {/* hub */}
-          <circle cx={C} cy={C} r={50} fill="#0f0f2a" stroke="rgba(167, 80, 255, 0.4)" strokeWidth={2} />
+
+          {/* hub base under the button */}
+          <circle cx={C} cy={C} r={54} fill="#14102e" />
         </svg>
       </div>
 
-      {/* pointer */}
+      {/* pointer, 3 o'clock */}
       <svg
-        viewBox="0 0 36 30"
-        className="absolute left-1/2 top-[-6px] w-9 -translate-x-1/2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
+        viewBox="0 0 30 36"
+        className="absolute right-[-7px] top-1/2 w-7 -translate-y-1/2 drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
       >
-        <path d="M 2 2 L 34 2 L 18 28 Z" fill="#ffc42e" stroke="#000017" strokeWidth={2} />
+        <path d="M 28 2 L 28 34 L 3 18 Z" fill="#ff3d8b" stroke="#14102e" strokeWidth={2} />
       </svg>
 
-      {/* spin button over the hub */}
+      {/* gold spin hub */}
       <button
         onClick={spin}
         disabled={spinning || disabled}
-        className="absolute left-1/2 top-1/2 h-[22%] w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-[#a750ff] to-[#7226c4] text-sm font-extrabold tracking-widest text-white shadow-[0_0_24px_rgba(167,80,255,0.45)] transition-transform enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-40"
+        className="absolute left-1/2 top-1/2 flex h-[25%] w-[25%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#ffe9a8,#f5a623_55%,#c47a12)] leading-tight text-[#402c00] shadow-[0_0_28px_rgba(245,166,35,0.45)] transition-transform enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-50"
       >
-        SPIN
+        <span className="text-base font-extrabold tracking-wider">SPIN</span>
+        <span className="text-[10px] font-bold tracking-widest">&amp; WIN</span>
       </button>
     </div>
   );
-}
+});
