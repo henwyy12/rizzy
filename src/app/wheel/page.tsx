@@ -97,10 +97,10 @@ export default function WheelPage() {
 
           {/* logo lockup */}
           <h1 className="mt-5 flex items-baseline gap-2">
-            <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-4xl font-extrabold italic tracking-tight text-transparent">
+            <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-5xl font-extrabold italic tracking-tight text-transparent">
               DAILY
             </span>
-            <span className="font-script text-4xl text-white [text-shadow:0_0_24px_rgba(167,80,255,0.8)]">
+            <span className="font-script text-5xl text-white [text-shadow:0_0_24px_rgba(167,80,255,0.8)]">
               Wheel
             </span>
           </h1>
