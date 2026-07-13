@@ -210,11 +210,13 @@ export default function WheelPage() {
             <p className="text-7xl font-extrabold uppercase italic tracking-tight text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)] sm:text-8xl">
               {headlineFor(result)}
             </p>
-            <div
-              className="mt-8 bg-gradient-to-r from-[#7226c4] via-[#a750ff] to-[#7226c4] px-10 py-2.5 text-xl font-extrabold text-white"
-              style={{ clipPath: "polygon(7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%, 0 50%)" }}
-            >
-              {result.name}
+            {/* prize reward chip: bright gradient ring + dark glass + gradient text */}
+            <div className="mt-8 rounded-2xl bg-gradient-to-b from-[#c88bff] via-[#a855ff] to-[#6a1fc4] p-[2px] shadow-[0_0_44px_rgba(167,80,255,0.55)]">
+              <div className="rounded-[14px] bg-gradient-to-b from-[#1c1140] to-[#120a2e] px-9 py-4">
+                <span className="bg-gradient-to-b from-white to-[#dcc6ff] bg-clip-text text-2xl font-extrabold text-transparent">
+                  {result.name}
+                </span>
+              </div>
             </div>
             <p className="mt-6 text-sm text-app-secondary-text">
               {result.win
