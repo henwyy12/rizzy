@@ -225,7 +225,7 @@ export default function WheelPage() {
                   </div>
                 </div>
                 <p className="mt-6 text-sm text-app-secondary-text">
-                  Added to your Bonus Bank — use it on any game.
+                  Added to your account — ready to use.
                 </p>
               </>
             )}
