@@ -219,7 +219,7 @@ export const SpinWheel = forwardRef<
       <button
         onClick={spin}
         disabled={spinning || disabled}
-        className="absolute left-1/2 top-1/2 h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[linear-gradient(180deg,#ffd53e_0%,#f07222_100%)] p-[9%] shadow-[0_0_28px_rgba(245,166,35,0.45)] transition-transform enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-50"
+        className="absolute left-1/2 top-1/2 h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[linear-gradient(180deg,#ffd53e_0%,#f07222_100%)] p-2.5 shadow-[0_0_28px_rgba(245,166,35,0.45)] transition-transform enabled:hover:scale-105 enabled:active:scale-95 disabled:opacity-50"
       >
         <span className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[linear-gradient(180deg,#e85d2e_0%,#ffd53e_100%)] leading-tight text-[#402c00]">
           <span className="text-base font-extrabold tracking-wider">SPIN</span>
