@@ -9,6 +9,7 @@ import {
   type VariantName,
 } from "@/components/spin-wheel";
 import { PRIZES } from "@/lib/wheel-prizes";
+import { saveWheelTheme, type SavedWheelTheme } from "@/lib/wheel-theme-store";
 
 // A theme sets the whole wheel at once: the two alternating win-segment
 // variants, plus the jackpot and no-win backgrounds.
@@ -60,6 +61,7 @@ export default function ThemesPage() {
   const [bgOverrides, setBgOverrides] = useState<Record<string, VariantName>>({});
   const [iconOverrides, setIconOverrides] = useState<Record<string, IconName>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [applied, setApplied] = useState(false);
 
   const theme = THEMES[themeIdx];
 
@@ -79,6 +81,16 @@ export default function ThemesPage() {
     setThemeIdx(i);
     setBgOverrides({});
     setIconOverrides({});
+    setApplied(false);
+  }
+
+  function apply() {
+    const segments: SavedWheelTheme["segments"] = {};
+    prizes.forEach((p) => {
+      segments[p.id] = { variant: p.variant, icon: p.icon };
+    });
+    saveWheelTheme({ rimVariant: theme.a, segments });
+    setApplied(true);
   }
 
   const dirty =
@@ -86,14 +98,31 @@ export default function ThemesPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-8">
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold">Wheel theme lab</h1>
-        <Link
-          href="/wheel"
-          className="text-sm text-app-secondary-text transition-colors hover:text-app-main-text"
-        >
-          view the wheel &rarr;
-        </Link>
+        <div className="flex items-center gap-3">
+          {applied ? (
+            <Link
+              href="/wheel"
+              className="text-sm font-medium text-[#1fc98e] transition-colors hover:underline"
+            >
+              Applied &mdash; view the wheel &rarr;
+            </Link>
+          ) : (
+            <Link
+              href="/wheel"
+              className="text-sm text-app-secondary-text transition-colors hover:text-app-main-text"
+            >
+              view the wheel &rarr;
+            </Link>
+          )}
+          <button
+            onClick={apply}
+            className="rounded-lg bg-gradient-to-b from-[#a750ff] to-[#7226c4] px-4 py-2 text-sm font-semibold text-white shadow-[0_0_20px_rgba(167,80,255,0.3)] transition-transform hover:scale-[1.03] active:scale-95"
+          >
+            Apply to the wheel
+          </button>
+        </div>
       </div>
       <p className="mt-1 text-sm text-app-secondary-text">
         Pick a theme to recolour the whole wheel, then fine-tune any prize&rsquo;s
@@ -157,9 +186,10 @@ export default function ThemesPage() {
                 <select
                   className={selectCls}
                   value={p.icon}
-                  onChange={(e) =>
-                    setIconOverrides((o) => ({ ...o, [p.id]: e.target.value as IconName }))
-                  }
+                  onChange={(e) => {
+                    setIconOverrides((o) => ({ ...o, [p.id]: e.target.value as IconName }));
+                    setApplied(false);
+                  }}
                 >
                   {ICON_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -175,9 +205,10 @@ export default function ThemesPage() {
                   <select
                     className={selectCls}
                     value={p.variant}
-                    onChange={(e) =>
-                      setBgOverrides((o) => ({ ...o, [p.id]: e.target.value as VariantName }))
-                    }
+                    onChange={(e) => {
+                      setBgOverrides((o) => ({ ...o, [p.id]: e.target.value as VariantName }));
+                      setApplied(false);
+                    }}
                   >
                     {(Object.keys(VARIANTS) as VariantName[]).map((name) => (
                       <option key={name} value={name}>
