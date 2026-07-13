@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   SpinWheel,
@@ -96,13 +97,16 @@ export default function WheelPage() {
           </div>
 
           {/* logo lockup */}
-          <h1 className="mt-5 flex items-baseline gap-2">
-            <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-4xl font-extrabold italic tracking-tight text-transparent">
-              DAILY
-            </span>
-            <span className="font-script text-4xl text-white [text-shadow:0_0_24px_rgba(167,80,255,0.8)]">
-              Wheel
-            </span>
+          <h1 className="mt-5">
+            <Image
+              src="/daily-wheel.png"
+              alt="Daily Wheel"
+              width={220}
+              height={76}
+              priority
+              unoptimized
+              className="drop-shadow-[0_0_24px_rgba(167,80,255,0.5)]"
+            />
           </h1>
 
           <div className="mt-6 w-full max-w-[540px]">
