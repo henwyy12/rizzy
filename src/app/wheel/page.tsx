@@ -196,9 +196,9 @@ export default function WheelPage() {
               />
             ))}
 
-          <div className="relative flex w-full max-w-sm flex-col items-center text-center">
-            <p className="font-script -rotate-6 text-7xl text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)]">
-              {result.win ? "You Win" : "So Close"}
+          <div className="relative flex w-full max-w-md flex-col items-center text-center">
+            <p className="text-7xl font-extrabold uppercase italic tracking-tight text-white [text-shadow:0_0_40px_rgba(167,80,255,0.9),0_0_12px_rgba(255,255,255,0.4)] sm:text-8xl">
+              {result.win ? "You win" : "So close"}
             </p>
             <div
               className="mt-8 bg-gradient-to-r from-[#7226c4] via-[#a750ff] to-[#7226c4] px-10 py-2.5 text-xl font-extrabold text-white"
