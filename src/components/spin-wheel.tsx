@@ -24,7 +24,10 @@ const TURNS = 6;
 export const SPIN_MS = 7000;
 const SIZE = 400;
 const C = SIZE / 2;
-const R = 182;
+const R = 180; // outer radius of segments
+const INNER_R = 56; // segments stop at the hub instead of the center
+const CORNER = 5; // segment corner radius (via round stroke)
+const GAP = 5; // px gap between segments
 const ICON_R = 144;
 const LABEL_R = 98;
 const POINTER_DEG = 90; // pointer sits at 3 o'clock
@@ -38,10 +41,22 @@ function polar(deg: number, r: number) {
   return { x: round(C + r * Math.sin(rad)), y: round(C - r * Math.cos(rad)) };
 }
 
+// annular segment with parallel-edged gaps; drawn inset by CORNER, then a
+// round-join stroke of 2*CORNER grows it back out with rounded corners
+const R_OUT = R - CORNER;
+const R_IN = INNER_R + CORNER;
+const insetDeg = (r: number) => (((GAP / 2 + CORNER) / r) * 180) / Math.PI;
+
 function segmentPath(a0: number, a1: number) {
-  const p0 = polar(a0, R);
-  const p1 = polar(a1, R);
-  return `M ${C} ${C} L ${p0.x} ${p0.y} A ${R} ${R} 0 0 1 ${p1.x} ${p1.y} Z`;
+  const o0 = a0 + insetDeg(R_OUT);
+  const o1 = a1 - insetDeg(R_OUT);
+  const i0 = a0 + insetDeg(R_IN);
+  const i1 = a1 - insetDeg(R_IN);
+  const A = polar(o0, R_OUT);
+  const B = polar(o1, R_OUT);
+  const D = polar(i1, R_IN);
+  const E = polar(i0, R_IN);
+  return `M ${A.x} ${A.y} A ${R_OUT} ${R_OUT} 0 0 1 ${B.x} ${B.y} L ${D.x} ${D.y} A ${R_IN} ${R_IN} 0 0 0 ${E.x} ${E.y} Z`;
 }
 
 function pickWeighted(prizes: WheelPrize[]) {
@@ -151,8 +166,9 @@ export const SpinWheel = forwardRef<
                 <path
                   d={segmentPath(a0, a1)}
                   fill={fill}
-                  stroke={p.hero ? "#ffd86b" : "rgba(109, 91, 208, 0.35)"}
-                  strokeWidth={p.hero ? 2 : 1.5}
+                  stroke={fill}
+                  strokeWidth={CORNER * 2}
+                  strokeLinejoin="round"
                 />
                 {p.kind === "fs" ? (
                   <text
