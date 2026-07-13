@@ -16,8 +16,12 @@ export type WheelPrize = {
   kind: "lose" | "fs" | "match" | "cash";
   hero?: boolean; // the one glowing gold jackpot segment
   variant?: VariantName; // segment background; falls back to the default alternation
+  icon?: IconName; // segment icon; falls back to the one implied by kind
   win: boolean;
 };
+
+// Icons a segment can show; defaults to the one matching its kind.
+export type IconName = "fs" | "cash" | "match" | "lose" | "none";
 
 export type SpinWheelHandle = { spin: () => void };
 
@@ -261,7 +265,7 @@ export const SpinWheel = forwardRef<
             const labelPos = polar(mid, LABEL_R);
             // radial labels, flipped on the left half so they stay readable
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
-            const icon = ICON[p.kind];
+            const iconName = p.icon ?? p.kind;
             const fill = `url(#seg-${i})`;
             const selected = selectedId === p.id;
             const dimmed = onSegmentClick
@@ -287,7 +291,7 @@ export const SpinWheel = forwardRef<
                   strokeWidth={selected ? CORNER * 2 + 1 : CORNER * 2}
                   strokeLinejoin="round"
                 />
-                {p.kind === "fs" ? (
+                {iconName === "none" ? null : iconName === "fs" ? (
                   <text
                     x={iconPos.x}
                     y={iconPos.y}
@@ -301,7 +305,7 @@ export const SpinWheel = forwardRef<
                   >
                     FS
                   </text>
-                ) : p.kind === "lose" ? (
+                ) : iconName === "lose" ? (
                   <text
                     x={iconPos.x}
                     y={iconPos.y}
@@ -314,7 +318,7 @@ export const SpinWheel = forwardRef<
                   >
                     ×
                   </text>
-                ) : p.kind === "cash" ? (
+                ) : iconName === "cash" ? (
                   <use
                     href="#usd-coin"
                     x={iconPos.x - 11}
@@ -325,18 +329,18 @@ export const SpinWheel = forwardRef<
                   />
                 ) : (
                   <>
-                    <circle cx={iconPos.x} cy={iconPos.y} r={11} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
+                    <circle cx={iconPos.x} cy={iconPos.y} r={11} fill={ICON[iconName].fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
                     <text
                       x={iconPos.x}
                       y={iconPos.y}
                       transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill={icon.glyphFill}
+                      fill={ICON[iconName].glyphFill}
                       fontSize={11.5}
                       fontWeight={800}
                     >
-                      {icon.glyph}
+                      {ICON[iconName].glyph}
                     </text>
                   </>
                 )}
