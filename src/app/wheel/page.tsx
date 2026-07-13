@@ -53,7 +53,10 @@ export default function WheelPage() {
       }))
     : PRIZES;
 
-  const chrome = `transition-opacity duration-500 ${spinning ? "opacity-0" : "opacity-100"}`;
+  // on spin, the lockup slides up and the bottom chrome slides down so the
+  // wheel takes over the frame
+  const slideUp = `transition-all duration-500 ${spinning ? "-translate-y-8 opacity-0" : "translate-y-0 opacity-100"}`;
+  const slideDown = `transition-all duration-500 ${spinning ? "translate-y-8 opacity-0" : "translate-y-0 opacity-100"}`;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-4 py-8">
@@ -65,7 +68,7 @@ export default function WheelPage() {
 
         <div className="relative flex flex-col items-center">
           {/* logo lockup */}
-          <h1 className="flex items-baseline gap-2">
+          <h1 className={`flex items-baseline gap-2 ${slideUp}`}>
             <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-4xl font-extrabold italic tracking-tight text-transparent sm:text-6xl">
               DAILY
             </span>
@@ -91,7 +94,7 @@ export default function WheelPage() {
           </div>
 
           <div
-            className={`mt-6 flex items-center gap-2.5 rounded-full border border-app-light-stroke bg-app-dark-100/80 px-6 py-2.5 text-base font-semibold ${chrome}`}
+            className={`mt-6 flex items-center gap-2.5 rounded-full border border-app-light-stroke bg-app-dark-100/80 px-6 py-2.5 text-base font-semibold ${slideDown}`}
           >
             <span className={`h-2.5 w-2.5 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e] shadow-[0_0_8px_rgba(31,201,142,0.8)]" : "bg-app-secondary-text"}`} />
             {spinsLeft > 0 ? (
@@ -104,7 +107,7 @@ export default function WheelPage() {
           </div>
 
           {/* prize legend, like the reference's bottom strip */}
-          <div className={`mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-app-secondary-text ${chrome}`}>
+          <div className={`mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-app-secondary-text ${slideDown}`}>
             <span className="flex items-center gap-1.5">
               <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-sm font-extrabold italic text-transparent">
                 FS
@@ -128,7 +131,7 @@ export default function WheelPage() {
       </div>
 
       {/* how-it-works accordion, styled like the vip-club FAQ */}
-      <div className={`mt-6 w-full space-y-3 ${chrome}`}>
+      <div className={`mt-6 w-full space-y-3 ${slideDown}`}>
         {FAQ.map((item, i) => (
           <div key={item.q} className="rounded-xl border border-app-light-stroke bg-app-dark-100">
             <button
@@ -159,14 +162,14 @@ export default function WheelPage() {
 
       <button
         onClick={() => setSpinsLeft(2)}
-        className={`mt-5 text-xs text-app-secondary-text underline-offset-2 transition-colors hover:text-app-main-text hover:underline ${chrome}`}
+        className={`mt-5 text-xs text-app-secondary-text underline-offset-2 transition-colors hover:text-app-main-text hover:underline ${slideDown}`}
       >
         demo: reset spins
       </button>
 
       <Link
         href="/wheel/themes"
-        className={`mt-2 text-xs text-app-purple underline-offset-2 transition-colors hover:text-app-main-text hover:underline ${chrome}`}
+        className={`mt-2 text-xs text-app-purple underline-offset-2 transition-colors hover:text-app-main-text hover:underline ${slideDown}`}
       >
         open the theme design lab &rarr;
       </Link>
