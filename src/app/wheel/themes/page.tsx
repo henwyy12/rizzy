@@ -21,10 +21,10 @@ const THEMES: {
   lose: VariantName;
 }[] = [
   { name: "Purple", a: "violet", b: "deep-violet", hero: "gold-hero", lose: "dead" },
-  { name: "Ocean", a: "blue", b: "sky", hero: "gold-hero", lose: "dead" },
-  { name: "Candy", a: "pink", b: "magenta", hero: "gold-hero", lose: "dead" },
-  { name: "Emerald", a: "green", b: "deep-violet", hero: "gold-hero", lose: "dead" },
-  { name: "Sunset", a: "ruby", b: "pink", hero: "gold-hero", lose: "dead" },
+  { name: "Royale", a: "deep-violet", b: "blue", hero: "gold-hero", lose: "dead" },
+  { name: "Frost", a: "blue", b: "white", hero: "gold-hero", lose: "dead" },
+  { name: "Amber", a: "orange", b: "white", hero: "gold-hero", lose: "dead" },
+  { name: "Inferno", a: "red", b: "white", hero: "gold-hero", lose: "dead" },
 ];
 
 const VARIANT_LABELS: Record<VariantName, string> = {
