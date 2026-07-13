@@ -28,8 +28,8 @@ const R = 180; // outer radius of segments
 const INNER_R = 56; // segments stop at the hub instead of the center
 const CORNER = 5; // segment corner radius (via round stroke)
 const GAP = 5; // px gap between segments
-const ICON_R = 144;
-const LABEL_R = 98;
+const ICON_R = 150;
+const LABEL_R = 100;
 const POINTER_DEG = 90; // pointer sits at 3 o'clock
 
 // rounded to avoid SSR/client float serialization mismatches
@@ -186,7 +186,7 @@ export const SpinWheel = forwardRef<
                     textAnchor="middle"
                     dominantBaseline="central"
                     fill="url(#fs-brand)"
-                    fontSize={17}
+                    fontSize={14}
                     fontWeight={800}
                     fontStyle="italic"
                   >
@@ -195,15 +195,15 @@ export const SpinWheel = forwardRef<
                 ) : p.kind === "cash" ? (
                   <use
                     href="#usd-coin"
-                    x={iconPos.x - 14}
-                    y={iconPos.y - 14}
-                    width={28}
-                    height={28}
+                    x={iconPos.x - 11}
+                    y={iconPos.y - 11}
+                    width={22}
+                    height={22}
                     transform={`rotate(${rot} ${iconPos.x} ${iconPos.y})`}
                   />
                 ) : (
                   <>
-                    <circle cx={iconPos.x} cy={iconPos.y} r={14} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
+                    <circle cx={iconPos.x} cy={iconPos.y} r={11} fill={icon.fill} stroke="rgba(0,0,23,0.45)" strokeWidth={2} />
                     <text
                       x={iconPos.x}
                       y={iconPos.y}
@@ -211,7 +211,7 @@ export const SpinWheel = forwardRef<
                       textAnchor="middle"
                       dominantBaseline="central"
                       fill={icon.glyphFill}
-                      fontSize={14}
+                      fontSize={11.5}
                       fontWeight={800}
                     >
                       {icon.glyph}
@@ -225,7 +225,7 @@ export const SpinWheel = forwardRef<
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill={p.hero ? "#402c00" : p.kind === "lose" ? "#8a8a8a" : "#ffffff"}
-                  fontSize={p.label.length > 4 ? 13 : 16}
+                  fontSize={p.label.length > 6 ? 12.5 : p.label.length > 4 ? 13.5 : 16}
                   fontWeight={800}
                 >
                   {p.label}

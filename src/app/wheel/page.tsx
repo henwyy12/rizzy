@@ -22,10 +22,10 @@ const PRIZES: Prize[] = [
   { id: "c500", label: "$500", name: "$500 Cash", kind: "cash", win: true, weight: 500, juiced: 700 },
   { id: "fs500", label: "500", name: "500 Free Spins", kind: "fs", win: true, weight: 60000, juiced: 100000 },
   { id: "m50", label: "+50%", name: "50% Deposit Match", kind: "match", win: true, weight: 12000, juiced: 18000 },
-  { id: "c1000", label: "$1K", name: "$1,000 Cash", kind: "cash", win: true, weight: 99, juiced: 200 },
-  { id: "fs1000", label: "1000", name: "1,000 Free Spins", kind: "fs", win: true, weight: 20000, juiced: 30000 },
+  { id: "c1000", label: "$1,000", name: "$1,000 Cash", kind: "cash", win: true, weight: 99, juiced: 200 },
+  { id: "fs1000", label: "1,000", name: "1,000 Free Spins", kind: "fs", win: true, weight: 20000, juiced: 30000 },
   { id: "m100", label: "+100%", name: "100% Deposit Match", kind: "match", win: true, weight: 5000, juiced: 8000 },
-  { id: "c10k", label: "$10K", name: "$10,000 Cash", kind: "cash", win: true, weight: 1, juiced: 1, hero: true },
+  { id: "c10k", label: "$10,000", name: "$10,000 Cash", kind: "cash", win: true, weight: 1, juiced: 1, hero: true },
 ];
 
 // deterministic burst pattern for the result screen (SSR-safe)
