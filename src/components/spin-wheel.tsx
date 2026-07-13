@@ -86,30 +86,55 @@ export const SpinWheel = forwardRef<
     onDone: (prize: WheelPrize) => void;
   }
 >(function SpinWheel({ prizes, disabled, onSpinStart, onDone }, ref) {
-  const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [blurred, setBlurred] = useState(false);
   const [hovered, setHovered] = useState<WheelPrize | null>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // rotation lives outside React state: the idle drift updates it every frame
+  const wheelEl = useRef<HTMLDivElement>(null);
+  const rot = useRef(0);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // slow idle drift while not spinning
+  useEffect(() => {
+    if (spinning) return;
+    const el = wheelEl.current;
+    if (!el) return;
+    el.style.transition = "none";
+    let raf = 0;
+    let last = performance.now();
+    const tick = (t: number) => {
+      rot.current += (t - last) * 0.003; // ~3 degrees per second
+      last = t;
+      el.style.transform = `rotate(${rot.current}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [spinning]);
 
   const seg = 360 / prizes.length;
 
   function spin() {
     if (spinning || disabled) return;
+    const el = wheelEl.current;
+    if (!el) return;
     const i = pickWeighted(prizes);
     const prize = prizes[i];
     // land the pointer inside segment i, with some jitter off dead-center
     const center = i * seg + seg / 2;
     const jitter = (Math.random() - 0.5) * seg * 0.6;
     const landing = (POINTER_DEG - center + jitter + 720) % 360;
-    const delta = (landing - (rotation % 360) + 360) % 360;
+    const delta = (landing - (rot.current % 360) + 360) % 360;
     setSpinning(true);
     setHovered(null);
     onSpinStart?.();
-    setRotation(rotation + TURNS * 360 + delta);
+    rot.current += TURNS * 360 + delta;
+    el.style.transition = `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.8, 0.13, 1)`;
+    void el.offsetWidth; // flush so the transition starts from the idle angle
+    el.style.transform = `rotate(${rot.current}deg)`;
     // resolve on timers, not transitionend — throttled tabs can swallow the event
     timers.current.push(
       setTimeout(() => setBlurred(true), 400),
@@ -131,14 +156,14 @@ export const SpinWheel = forwardRef<
         setMouse({ x: e.clientX - r.left, y: e.clientY - r.top });
       }}
     >
-      <div
-        className="h-full w-full"
-        style={{
-          transform: `rotate(${rotation}deg)`,
-          transition: `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.8, 0.13, 1), filter 300ms`,
-          filter: blurred ? "blur(2.5px)" : "none",
-        }}
-      >
+      <div ref={wheelEl} className="h-full w-full">
+        <div
+          className="h-full w-full"
+          style={{
+            filter: blurred ? "blur(2.5px)" : "none",
+            transition: "filter 300ms",
+          }}
+        >
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
           <defs>
             <symbol id="usd-coin" viewBox="0 0 16 16">
@@ -256,6 +281,7 @@ export const SpinWheel = forwardRef<
           <circle cx={C} cy={C} r={R} fill="url(#sheen)" pointerEvents="none" />
 
         </svg>
+        </div>
       </div>
 
       {/* hover tooltip with the full prize name (desktop only — no hover on touch) */}
