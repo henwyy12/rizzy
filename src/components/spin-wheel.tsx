@@ -121,13 +121,24 @@ export const SpinWheel = forwardRef<
     disabled?: boolean;
     onSpinStart?: () => void;
     onDone: (prize: WheelPrize) => void;
+    // rim (outer band) colour; falls back to the default purple rim
+    rimVariant?: VariantName;
     // design mode: freeze drift/spin and let segments be clicked for editing
     frozen?: boolean;
     selectedId?: string | null;
     onSegmentClick?: (prize: WheelPrize) => void;
   }
 >(function SpinWheel(
-  { prizes, disabled, onSpinStart, onDone, frozen, selectedId, onSegmentClick },
+  {
+    prizes,
+    disabled,
+    onSpinStart,
+    onDone,
+    rimVariant,
+    frozen,
+    selectedId,
+    onSegmentClick,
+  },
   ref,
 ) {
   const [spinning, setSpinning] = useState(false);
@@ -229,8 +240,8 @@ export const SpinWheel = forwardRef<
               );
             })}
             <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6d5bd0" />
-              <stop offset="100%" stopColor="#2b2166" />
+              <stop offset="0%" stopColor={rimVariant ? VARIANTS[rimVariant].rim : "#6d5bd0"} />
+              <stop offset="100%" stopColor={rimVariant ? VARIANTS[rimVariant].hub : "#2b2166"} />
             </linearGradient>
             <radialGradient id="sheen" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="rgba(255,255,255,0)" />

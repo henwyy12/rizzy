@@ -73,6 +73,7 @@ export default function ThemesPage() {
           <div className="w-full max-w-[420px]">
             <SpinWheel
               prizes={prizes}
+              rimVariant={theme.a}
               frozen
               selectedId={selectedId}
               onSegmentClick={(p) =>
