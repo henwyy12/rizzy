@@ -89,6 +89,8 @@ export const SpinWheel = forwardRef<
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [blurred, setBlurred] = useState(false);
+  const [hovered, setHovered] = useState<WheelPrize | null>(null);
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -105,6 +107,7 @@ export const SpinWheel = forwardRef<
     const landing = (POINTER_DEG - center + jitter + 720) % 360;
     const delta = (landing - (rotation % 360) + 360) % 360;
     setSpinning(true);
+    setHovered(null);
     onSpinStart?.();
     setRotation(rotation + TURNS * 360 + delta);
     // resolve on timers, not transitionend — throttled tabs can swallow the event
@@ -121,7 +124,13 @@ export const SpinWheel = forwardRef<
   useImperativeHandle(ref, () => ({ spin }));
 
   return (
-    <div className="relative aspect-square w-full max-w-[540px]">
+    <div
+      className="relative aspect-square w-full max-w-[540px]"
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        setMouse({ x: e.clientX - r.left, y: e.clientY - r.top });
+      }}
+    >
       <div
         className="h-full w-full"
         style={{
@@ -170,7 +179,16 @@ export const SpinWheel = forwardRef<
             const icon = ICON[p.kind];
             const fill = p.hero ? "url(#hero-gold)" : i % 2 ? "#2b2166" : "#221a52";
             return (
-              <g key={p.id}>
+              <g
+                key={p.id}
+                onMouseEnter={() => !spinning && setHovered(p)}
+                onMouseLeave={() => setHovered((h) => (h?.id === p.id ? null : h))}
+                style={{
+                  filter: hovered?.id === p.id ? "brightness(1.3)" : "none",
+                  opacity: hovered && hovered.id !== p.id ? 0.55 : 1,
+                  transition: "filter 150ms, opacity 150ms",
+                }}
+              >
                 <path
                   d={segmentPath(a0, a1)}
                   fill={fill}
@@ -239,6 +257,21 @@ export const SpinWheel = forwardRef<
 
         </svg>
       </div>
+
+      {/* hover tooltip with the full prize name (desktop only — no hover on touch) */}
+      {hovered && !spinning && (
+        <div
+          className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[140%]"
+          style={{ left: mouse.x, top: mouse.y }}
+        >
+          <div
+            className="whitespace-nowrap rounded-lg border border-app-light-stroke bg-app-dark-100/95 px-3 py-1.5 text-sm font-semibold text-app-main-text shadow-[0_4px_16px_rgba(0,0,23,0.6)]"
+            style={{ animation: "tip-in 150ms ease-out" }}
+          >
+            {hovered.name}
+          </div>
+        </div>
+      )}
 
       {/* pointer, 3 o'clock */}
       <svg
