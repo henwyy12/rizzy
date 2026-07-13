@@ -231,7 +231,7 @@ export default function WheelPage() {
             )}
             <button
               onClick={() => setResult(null)}
-              className="mt-8 w-full max-w-[240px] rounded-full bg-gradient-to-b from-[#a750ff] to-[#7226c4] py-3 font-bold text-white shadow-[0_0_28px_rgba(167,80,255,0.35)] transition-transform hover:scale-[1.03] active:scale-95"
+              className="mt-8 w-full max-w-[240px] rounded-xl bg-[#7f0ff0] px-4 py-3 font-bold text-white transition-colors hover:bg-[#8f22ff] active:scale-[0.98]"
             >
               {result.win ? "Awesome" : "Got it"}
             </button>
