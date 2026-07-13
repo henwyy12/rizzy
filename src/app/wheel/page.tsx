@@ -38,8 +38,24 @@ const COINS = [
   { dx: -110, dy: 220, size: 26, delay: 100, gold: true },
 ];
 
+const FAQ = [
+  {
+    q: "How do I earn spins?",
+    a: "Deposit once this week to unlock 2 free spins. Deposit again the next day to earn 1 more spin.",
+  },
+  {
+    q: "What can I win?",
+    a: "Free spins, deposit matches and cash prizes — everything you see on the wheel, up to $10,000.",
+  },
+  {
+    q: "Where do my winnings go?",
+    a: "Winnings are added to your Bonus Bank automatically after every spin.",
+  },
+];
+
 export default function WheelPage() {
   const [mode, setMode] = useState<"normal" | "juiced">("normal");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [spinsLeft, setSpinsLeft] = useState(2);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<WheelPrize | null>(null);
@@ -152,13 +168,32 @@ export default function WheelPage() {
         </div>
       </div>
 
-      <div className={`mt-6 w-full rounded-xl border border-app-light-stroke bg-app-dark-100 p-5 text-sm ${chrome}`}>
-        <h2 className="font-semibold">How it works</h2>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-app-secondary-text">
-          <li>Deposit once this week to unlock 2 free spins.</li>
-          <li>Deposit again the next day for 1 more spin.</li>
-          <li>Winnings are added to your Bonus Bank.</li>
-        </ul>
+      {/* how-it-works accordion, styled like the vip-club FAQ */}
+      <div className={`mt-6 w-full space-y-3 ${chrome}`}>
+        {FAQ.map((item, i) => (
+          <div key={item.q} className="rounded-xl border border-app-light-stroke bg-app-dark-100">
+            <button
+              onClick={() => setOpenFaq(openFaq === i ? null : i)}
+              className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold"
+            >
+              {item.q}
+              <svg
+                viewBox="0 0 16 16"
+                className={`h-4 w-4 shrink-0 text-app-secondary-text transition-transform duration-300 ${openFaq === i ? "rotate-90" : ""}`}
+              >
+                <path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div
+              className="grid transition-[grid-template-rows] duration-300"
+              style={{ gridTemplateRows: openFaq === i ? "1fr" : "0fr" }}
+            >
+              <div className="overflow-hidden">
+                <p className="px-5 pb-4 text-sm text-app-secondary-text">{item.a}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <button
