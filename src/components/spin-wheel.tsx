@@ -39,17 +39,18 @@ export type VariantName =
   | "magenta"
   | "ruby";
 
-export const VARIANTS: Record<VariantName, { hub: string; rim: string }> = {
-  violet: { hub: "#5b2bb8", rim: "#7b46f0" },
-  "deep-violet": { hub: "#2a1770", rim: "#4527c9" },
-  "gold-hero": { hub: "#c47a12", rim: "#ffd15e" },
-  dead: { hub: "#1e1b38", rim: "#2a2648" },
-  green: { hub: "#0c5a41", rim: "#1fc98e" },
-  pink: { hub: "#a01e5a", rim: "#ff5aa0" },
-  blue: { hub: "#123a8a", rim: "#3a7bff" },
-  sky: { hub: "#0e6a8a", rim: "#2fd0e0" },
-  magenta: { hub: "#7a1a8a", rim: "#e04ad0" },
-  ruby: { hub: "#8a1a2a", rim: "#ff4d6a" },
+// hub/rim are the gradient stops; text is the label colour that reads on it.
+export const VARIANTS: Record<VariantName, { hub: string; rim: string; text: string }> = {
+  violet: { hub: "#5b2bb8", rim: "#7b46f0", text: "#ffffff" },
+  "deep-violet": { hub: "#2a1770", rim: "#4527c9", text: "#ffffff" },
+  "gold-hero": { hub: "#c47a12", rim: "#ffd15e", text: "#402c00" },
+  dead: { hub: "#1e1b38", rim: "#2a2648", text: "#8a8a8a" },
+  green: { hub: "#0c5a41", rim: "#1fc98e", text: "#ffffff" },
+  pink: { hub: "#a01e5a", rim: "#ff5aa0", text: "#ffffff" },
+  blue: { hub: "#123a8a", rim: "#3a7bff", text: "#ffffff" },
+  sky: { hub: "#0e6a8a", rim: "#2fd0e0", text: "#ffffff" },
+  magenta: { hub: "#7a1a8a", rim: "#e04ad0", text: "#ffffff" },
+  ruby: { hub: "#8a1a2a", rim: "#ff4d6a", text: "#ffffff" },
 };
 
 // Resolve the background variant for a segment: explicit variant wins, else the
@@ -266,6 +267,7 @@ export const SpinWheel = forwardRef<
             // radial labels, flipped on the left half so they stay readable
             const rot = round(mid > 180 ? mid + 90 : mid - 90);
             const iconName = p.icon ?? p.kind;
+            const textColor = VARIANTS[resolveVariant(p, i)].text;
             const fill = `url(#seg-${i})`;
             const selected = selectedId === p.id;
             const dimmed = onSegmentClick
@@ -354,7 +356,7 @@ export const SpinWheel = forwardRef<
                   transform={`rotate(${rot} ${labelPos.x} ${labelPos.y})`}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fill={p.hero ? "#402c00" : p.kind === "lose" ? "#8a8a8a" : "#ffffff"}
+                  fill={textColor}
                   fontSize={p.label.length > 6 ? 12.5 : p.label.length > 4 ? 13.5 : 16}
                   fontWeight={800}
                 >
