@@ -133,6 +133,28 @@ export default function WheelPage() {
             <span className={`h-2 w-2 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e]" : "bg-app-secondary-text"}`} />
             {spinsLeft > 0 ? `${spinsLeft} spin${spinsLeft === 1 ? "" : "s"} available` : "No spins left"}
           </div>
+
+          {/* prize legend, like the reference's bottom strip */}
+          <div className={`mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-app-secondary-text ${chrome}`}>
+            <span className="flex items-center gap-1.5">
+              <span className="bg-gradient-to-r from-[#ff3d8b] to-[#a750ff] bg-clip-text text-sm font-extrabold italic text-transparent">
+                FS
+              </span>
+              up to <span className="font-bold text-app-main-text">1,000 free spins</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="grid h-[18px] w-[18px] place-items-center rounded-full bg-[#1fc98e] text-[10px] font-extrabold text-[#03130d]">
+                %
+              </span>
+              up to <span className="font-bold text-app-main-text">100% deposit match</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <svg width={18} height={18} viewBox="0 0 16 16">
+                <use href="#usd-coin" />
+              </svg>
+              up to <span className="font-bold text-app-main-text">$10,000 cash</span>
+            </span>
+          </div>
         </div>
       </div>
 
