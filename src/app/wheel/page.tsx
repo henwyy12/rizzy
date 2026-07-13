@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { SpinWheel, type WheelPrize } from "@/components/spin-wheel";
 
 // Real weights from the admin table (normal + juiced), interleaved so prize
@@ -69,15 +68,8 @@ export default function WheelPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center px-4 py-8">
-      <Link
-        href="/"
-        className="self-start text-sm text-app-secondary-text transition-colors hover:text-app-main-text"
-      >
-        &larr; prototypes
-      </Link>
-
       {/* modal-style panel, like the reference */}
-      <div className="relative mt-4 w-full overflow-hidden rounded-3xl border border-app-light-stroke bg-gradient-to-b from-[#0d0930] to-app-dark-100 px-5 py-8">
+      <div className="relative w-full overflow-hidden rounded-3xl border border-app-light-stroke bg-gradient-to-b from-[#0d0930] to-app-dark-100 px-5 py-8">
         {/* ambient glows */}
         <div className="pointer-events-none absolute -left-20 top-24 h-56 w-56 rounded-full bg-app-purple/15 blur-3xl" />
         <div className="pointer-events-none absolute -right-16 bottom-10 h-48 w-48 rounded-full bg-[#ff3d8b]/10 blur-3xl" />
