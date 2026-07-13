@@ -135,8 +135,8 @@ export default function WheelPage() {
             <div
               className={`mt-6 flex items-center gap-3 rounded-full border border-app-light-stroke bg-app-dark-100/80 py-2 pl-5 pr-2.5 ${slideDown}`}
             >
-              <span className="text-sm text-app-secondary-text">Next spin in</span>
-              <span className="rounded-full bg-app-dark-700/60 px-3 py-1 text-lg font-bold tabular-nums tracking-wide text-app-main-text">
+              <span className="text-sm font-medium text-white">Next spin in</span>
+              <span className="rounded-full bg-app-dark-700/60 px-3 py-1 text-lg font-bold tabular-nums tracking-wide text-white">
                 {countdown}
               </span>
             </div>
