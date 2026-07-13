@@ -1,12 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {
-  SpinWheel,
-  type SpinWheelHandle,
-  type WheelPrize,
-} from "@/components/spin-wheel";
+import { SpinWheel, type WheelPrize } from "@/components/spin-wheel";
 
 // Real weights from the admin table (normal + juiced), interleaved so prize
 // kinds distribute around the wheel.
@@ -47,7 +43,6 @@ export default function WheelPage() {
   const [spinsLeft, setSpinsLeft] = useState(2);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<WheelPrize | null>(null);
-  const wheel = useRef<SpinWheelHandle>(null);
 
   const prizes = PRIZES.map((p) => ({
     ...p,
@@ -107,7 +102,6 @@ export default function WheelPage() {
 
           <div className="mt-1 w-full max-w-[540px]">
             <SpinWheel
-              ref={wheel}
               prizes={prizes}
               disabled={spinsLeft === 0}
               onSpinStart={() => {
@@ -121,17 +115,18 @@ export default function WheelPage() {
             />
           </div>
 
-          <button
-            onClick={() => wheel.current?.spin()}
-            disabled={spinning || spinsLeft === 0}
-            className={`mt-7 w-full max-w-[280px] rounded-full bg-gradient-to-b from-[#a750ff] to-[#7226c4] py-3.5 text-lg font-bold text-white shadow-[0_0_28px_rgba(167,80,255,0.35)] transition-transform enabled:hover:scale-[1.03] enabled:active:scale-95 disabled:opacity-40 ${chrome}`}
+          <div
+            className={`mt-6 flex items-center gap-2.5 rounded-full border border-app-light-stroke bg-app-dark-100/80 px-6 py-2.5 text-base font-semibold ${chrome}`}
           >
-            {spinsLeft === 0 ? "Come back tomorrow" : "Spin and win"}
-          </button>
-
-          <div className={`mt-4 flex items-center gap-2 text-sm text-app-secondary-text ${chrome}`}>
-            <span className={`h-2 w-2 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e]" : "bg-app-secondary-text"}`} />
-            {spinsLeft > 0 ? `${spinsLeft} spin${spinsLeft === 1 ? "" : "s"} available` : "No spins left"}
+            <span className={`h-2.5 w-2.5 rounded-full ${spinsLeft > 0 ? "bg-[#1fc98e] shadow-[0_0_8px_rgba(31,201,142,0.8)]" : "bg-app-secondary-text"}`} />
+            {spinsLeft > 0 ? (
+              <span>
+                <span className="text-app-main-text">{spinsLeft}</span>{" "}
+                <span className="text-app-secondary-text">spin{spinsLeft === 1 ? "" : "s"} available</span>
+              </span>
+            ) : (
+              <span className="text-app-secondary-text">No spins left — come back tomorrow</span>
+            )}
           </div>
 
           {/* prize legend, like the reference's bottom strip */}
