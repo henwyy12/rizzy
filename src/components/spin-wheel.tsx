@@ -7,6 +7,13 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  playLose,
+  playTick,
+  playWin,
+  setMuted as setSoundMuted,
+  unlockSound,
+} from "@/lib/wheel-sound";
 
 export type WheelPrize = {
   id: string;
@@ -155,12 +162,67 @@ export const SpinWheel = forwardRef<
   const [spinning, setSpinning] = useState(false);
   const [hovered, setHovered] = useState<WheelPrize | null>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [muted, setMuted] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const tickRaf = useRef(0);
   // rotation lives outside React state: the idle drift updates it every frame
   const wheelEl = useRef<HTMLDivElement>(null);
   const rot = useRef(0);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // load + persist the mute preference; keep the sound module in sync
+  useEffect(() => {
+    const saved = localStorage.getItem("rizzy-wheel-muted") === "1";
+    setMuted(saved);
+    setSoundMuted(saved);
+  }, []);
+  function toggleMute() {
+    setMuted((m) => {
+      const next = !m;
+      setSoundMuted(next);
+      localStorage.setItem("rizzy-wheel-muted", next ? "1" : "0");
+      return next;
+    });
+  }
+
+  // read the wheel's live angle from its transform matrix
+  function currentAngle() {
+    const el = wheelEl.current;
+    if (!el) return 0;
+    const t = getComputedStyle(el).transform;
+    const m = t.match(/matrix\(([^)]+)\)/);
+    if (!m) return 0;
+    const [a, b] = m[1].split(",").map(Number);
+    return (Math.atan2(b, a) * 180) / Math.PI;
+  }
+
+  // tick once per segment the pointer passes, throttled so the fast early spin
+  // doesn't machine-gun; ticks naturally space out as the wheel slows
+  function runTicks() {
+    const segDeg = 360 / prizes.length;
+    let lastDeg = currentAngle();
+    let acc = 0;
+    let lastTick = performance.now();
+    const loop = () => {
+      const d = currentAngle();
+      let delta = d - lastDeg;
+      if (delta > 180) delta -= 360;
+      if (delta < -180) delta += 360;
+      acc += Math.abs(delta);
+      lastDeg = d;
+      if (acc >= segDeg) {
+        acc %= segDeg;
+        const now = performance.now();
+        if (now - lastTick > 45) {
+          playTick();
+          lastTick = now;
+        }
+      }
+      tickRaf.current = requestAnimationFrame(loop);
+    };
+    tickRaf.current = requestAnimationFrame(loop);
+  }
 
   // slow idle drift while not spinning
   useEffect(() => {
@@ -196,13 +258,18 @@ export const SpinWheel = forwardRef<
     setSpinning(true);
     setHovered(null);
     onSpinStart?.();
+    unlockSound();
     rot.current += TURNS * 360 + delta;
     el.style.transition = `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.8, 0.13, 1)`;
     void el.offsetWidth; // flush so the transition starts from the idle angle
     el.style.transform = `rotate(${rot.current}deg)`;
+    runTicks();
     // resolve on timers, not transitionend — throttled tabs can swallow the event
     timers.current.push(
       setTimeout(() => {
+        cancelAnimationFrame(tickRaf.current);
+        if (prize.win) playWin();
+        else playLose();
         setSpinning(false);
         onDone(prize);
       }, SPIN_MS + 200),
@@ -219,6 +286,22 @@ export const SpinWheel = forwardRef<
         setMouse({ x: e.clientX - r.left, y: e.clientY - r.top });
       }}
     >
+      {/* mute toggle, top-left like the reference */}
+      <button
+        onClick={toggleMute}
+        aria-label={muted ? "Unmute" : "Mute"}
+        className="absolute left-0 top-0 z-10 grid h-9 w-9 place-items-center rounded-full bg-app-dark-100/70 text-app-secondary-text transition-colors hover:text-app-main-text"
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 5 6 9H2v6h4l5 4V5z" />
+          {muted ? (
+            <path d="M23 9l-6 6M17 9l6 6" />
+          ) : (
+            <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" />
+          )}
+        </svg>
+      </button>
+
       <div ref={wheelEl} className="h-full w-full">
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
           <defs>
