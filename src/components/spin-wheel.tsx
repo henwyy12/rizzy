@@ -7,13 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  playLose,
-  playTick,
-  playWin,
-  setMuted as setSoundMuted,
-  unlockSound,
-} from "@/lib/wheel-sound";
+import { playLose, playTick, playWin, unlockSound } from "@/lib/wheel-sound";
 
 export type WheelPrize = {
   id: string;
@@ -162,7 +156,6 @@ export const SpinWheel = forwardRef<
   const [spinning, setSpinning] = useState(false);
   const [hovered, setHovered] = useState<WheelPrize | null>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [muted, setMuted] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const tickRaf = useRef(0);
   // rotation lives outside React state: the idle drift updates it every frame
@@ -170,21 +163,6 @@ export const SpinWheel = forwardRef<
   const rot = useRef(0);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
-
-  // load + persist the mute preference; keep the sound module in sync
-  useEffect(() => {
-    const saved = localStorage.getItem("rizzy-wheel-muted") === "1";
-    setMuted(saved);
-    setSoundMuted(saved);
-  }, []);
-  function toggleMute() {
-    setMuted((m) => {
-      const next = !m;
-      setSoundMuted(next);
-      localStorage.setItem("rizzy-wheel-muted", next ? "1" : "0");
-      return next;
-    });
-  }
 
   // read the wheel's live angle from its transform matrix
   function currentAngle() {
@@ -286,22 +264,6 @@ export const SpinWheel = forwardRef<
         setMouse({ x: e.clientX - r.left, y: e.clientY - r.top });
       }}
     >
-      {/* mute toggle, top-left like the reference */}
-      <button
-        onClick={toggleMute}
-        aria-label={muted ? "Unmute" : "Mute"}
-        className="absolute left-0 top-0 z-10 grid h-9 w-9 place-items-center rounded-full bg-app-dark-100/70 text-app-secondary-text transition-colors hover:text-app-main-text"
-      >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 5 6 9H2v6h4l5 4V5z" />
-          {muted ? (
-            <path d="M23 9l-6 6M17 9l6 6" />
-          ) : (
-            <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" />
-          )}
-        </svg>
-      </button>
-
       <div ref={wheelEl} className="h-full w-full">
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
           <defs>
