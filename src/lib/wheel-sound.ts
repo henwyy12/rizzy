@@ -22,6 +22,15 @@ export function unlockSound() {
   if (c && c.state === "suspended") c.resume();
 }
 
+// warm the audio pipeline on the first interaction so the first spin's ticks
+// aren't glitchy from a cold-started context
+export function primeSound() {
+  const c = getCtx();
+  if (!c) return;
+  if (c.state === "suspended") c.resume();
+  blip(1, 0.01, "sine", 0.00001); // inaudible primer
+}
+
 export function setMuted(m: boolean) {
   muted = m;
 }
@@ -34,6 +43,7 @@ function blip(
 ) {
   const c = getCtx();
   if (!c || muted) return;
+  if (c.state === "suspended") c.resume();
   const t = c.currentTime;
   const osc = c.createOscillator();
   const g = c.createGain();
