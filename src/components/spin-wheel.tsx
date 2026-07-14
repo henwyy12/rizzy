@@ -153,7 +153,6 @@ export const SpinWheel = forwardRef<
   ref,
 ) {
   const [spinning, setSpinning] = useState(false);
-  const [blurred, setBlurred] = useState(false);
   const [hovered, setHovered] = useState<WheelPrize | null>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -203,8 +202,6 @@ export const SpinWheel = forwardRef<
     el.style.transform = `rotate(${rot.current}deg)`;
     // resolve on timers, not transitionend — throttled tabs can swallow the event
     timers.current.push(
-      setTimeout(() => setBlurred(true), 400),
-      setTimeout(() => setBlurred(false), SPIN_MS - 1800),
       setTimeout(() => {
         setSpinning(false);
         onDone(prize);
@@ -223,13 +220,6 @@ export const SpinWheel = forwardRef<
       }}
     >
       <div ref={wheelEl} className="h-full w-full">
-        <div
-          className="h-full w-full"
-          style={{
-            filter: blurred ? "blur(2.5px)" : "none",
-            transition: "filter 300ms",
-          }}
-        >
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full">
           <defs>
             <symbol id="usd-coin" viewBox="0 0 16 16">
@@ -376,7 +366,6 @@ export const SpinWheel = forwardRef<
           <circle cx={C} cy={C} r={R} fill="url(#sheen)" pointerEvents="none" />
 
         </svg>
-        </div>
       </div>
 
       {/* hover tooltip with the full prize name (desktop only — no hover on touch) */}
