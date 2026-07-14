@@ -7,7 +7,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { playLose, playTick, playWin, unlockSound } from "@/lib/wheel-sound";
+import {
+  playLose,
+  playTick,
+  playWin,
+  primeSound,
+  unlockSound,
+} from "@/lib/wheel-sound";
 
 export type WheelPrize = {
   id: string;
@@ -158,11 +164,22 @@ export const SpinWheel = forwardRef<
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const tickRaf = useRef(0);
+  const driftRaf = useRef(0);
   // rotation lives outside React state: the idle drift updates it every frame
   const wheelEl = useRef<HTMLDivElement>(null);
   const rot = useRef(0);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // warm the audio context on the first interaction so the first spin is clean
+  useEffect(() => {
+    const prime = () => {
+      primeSound();
+      window.removeEventListener("pointerdown", prime);
+    };
+    window.addEventListener("pointerdown", prime);
+    return () => window.removeEventListener("pointerdown", prime);
+  }, []);
 
   // read the wheel's live angle from its transform matrix
   function currentAngle() {
@@ -208,16 +225,15 @@ export const SpinWheel = forwardRef<
     const el = wheelEl.current;
     if (!el) return;
     el.style.transition = "none";
-    let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
       rot.current += (t - last) * 0.003; // ~3 degrees per second
       last = t;
       el.style.transform = `rotate(${rot.current}deg)`;
-      raf = requestAnimationFrame(tick);
+      driftRaf.current = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    driftRaf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(driftRaf.current);
   }, [spinning, frozen]);
 
   const seg = 360 / prizes.length;
@@ -226,6 +242,8 @@ export const SpinWheel = forwardRef<
     if (spinning || disabled || frozen) return;
     const el = wheelEl.current;
     if (!el) return;
+    // stop the idle drift now so it doesn't fight the spin's first frame
+    cancelAnimationFrame(driftRaf.current);
     const i = pickWeighted(prizes);
     const prize = prizes[i];
     // land the pointer inside segment i, with some jitter off dead-center
