@@ -155,36 +155,36 @@ export function SideMenu() {
             />
           ))}
         </div>
-      </div>
 
-      {/* footer */}
-      <div className="shrink-0 border-t border-app-light-stroke pt-2.5">
-        {FOOTER.map((item) => (
-          <MenuItem
-            key={item.label}
-            item={item}
-            active={active === item.label}
-            onSelect={() => setActive(item.label)}
-          />
-        ))}
-        <div className="px-4 py-3">
-          <button className="flex h-[42px] w-full items-center justify-between rounded-md border border-app-light-stroke bg-app-dark-200 px-2.5">
-            <span className="flex items-center gap-2">
-              <Icon name="globe" className="size-3" />
-              <span className="text-sm font-semibold tracking-[-0.28px]">English</span>
-            </span>
-            <svg
-              viewBox="0 0 16 16"
-              className="size-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m4.5 6.5 3.5 3.5 3.5-3.5" />
-            </svg>
-          </button>
+        {/* scrolls with the rest — only the logo + search stay fixed */}
+        <div className="border-t border-app-light-stroke pt-2.5">
+          {FOOTER.map((item) => (
+            <MenuItem
+              key={item.label}
+              item={item}
+              active={active === item.label}
+              onSelect={() => setActive(item.label)}
+            />
+          ))}
+          <div className="px-4 py-3">
+            <button className="flex h-[42px] w-full items-center justify-between rounded-md border border-app-light-stroke bg-app-dark-200 px-2.5">
+              <span className="flex items-center gap-2">
+                <Icon name="globe" className="size-3" />
+                <span className="text-sm font-semibold tracking-[-0.28px]">English</span>
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m4.5 6.5 3.5 3.5 3.5-3.5" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </nav>
