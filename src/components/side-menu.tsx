@@ -89,12 +89,43 @@ export function SideMenu() {
 
   return (
     <nav className="flex h-full w-60 shrink-0 flex-col border-r border-app-light-stroke bg-app-dark-100 text-app-main-text">
-      {/* logo */}
-      <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-app-light-stroke px-4">
-        <span className="grid size-8 place-items-center rounded-md bg-app-primary text-sm font-extrabold">
-          R
-        </span>
-        <span className="text-base font-extrabold italic tracking-tight">rizzy</span>
+      {/* header: purple gradient band with the faint rizzy mark + menu toggle */}
+      <div className="relative h-16 shrink-0 overflow-hidden border-b border-app-light-stroke bg-[linear-gradient(115deg,#3b1170_0%,#2b0d4d_45%,#170735_100%)]">
+        <svg
+          viewBox="0 0 240 64"
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          aria-hidden
+        >
+          <path
+            d="M150 78 L186 18 L212 52 L238 4"
+            fill="none"
+            stroke="#7a3fd0"
+            strokeOpacity="0.25"
+            strokeWidth="14"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          <path
+            d="M-8 44 L28 -14"
+            fill="none"
+            stroke="#7a3fd0"
+            strokeOpacity="0.15"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+        </svg>
+        <button
+          aria-label="Toggle menu"
+          className="group relative flex h-full flex-col justify-center gap-[5px] px-4"
+        >
+          <span className="h-[3.5px] w-7 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
+          <span className="flex items-center gap-[4px]">
+            <span className="h-[3.5px] w-3.5 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
+            <span className="size-[5px] rounded-full bg-app-primary" />
+            <span className="h-[3.5px] w-2 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
+          </span>
+          <span className="h-[3.5px] w-7 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
+        </button>
       </div>
 
       {/* search */}
