@@ -6,8 +6,9 @@ UI prototype of the Daily Spin Wheel for rizzy. The design lives in one
 component; everything else is scaffolding to demo it. Next 16, React 19,
 Tailwind v4.
 
-## Three kinds of code here
+## Two features live here (independent of each other)
 
+**1. Daily Wheel** — `/wheel`
 - **The design (ship this):** `src/components/spin-wheel.tsx` — the whole wheel,
   self-contained React + SVG.
 - **The product page:** `src/app/wheel/page.tsx` — wheel + legend + FAQ + result
@@ -15,6 +16,21 @@ Tailwind v4.
 - **The design tool (do NOT ship):** `src/app/wheel/themes/page.tsx` — a "theme
   lab" for choosing colours. Its `THEMES` + the component's `VARIANTS` are the
   **spec for the admin**, not production code.
+
+**2. Sidemenu** — `/sidebar`
+- `src/components/side-menu.tsx` — 240px sidebar built to the Figma
+  ([node 28639-475767](https://www.figma.com/design/ugQ46NzYO1Q9wVRPuFRxC6/Rizzy-NEW?node-id=28639-475767)).
+  `src/app/sidebar/page.tsx` is just a demo shell around it.
+- Structure: logo → search → (Lobby / Favourites / Recently Played) → Promotions
+  (expandable) → 13 game links → (VIP Club / Affiliate / Live Support / language).
+- Spec: 240px wide, 48px rows, 6px radius, Inter 14px semibold (`-0.28px`
+  tracking), active row = bold + `bg-app-purple-900` + a 4px `bg-app-primary`
+  accent bar on the left edge. Middle section scrolls (`.thin-scroll`), footer is
+  pinned.
+- **Icons are placeholders** — swap for rizzy's real `sidebar-icons` set.
+- Prod's sidebar is **shadcn/ui `Sidebar`**. Keep that shell (collapse/mobile
+  behaviour) and port the styling + structure from here into it, rather than
+  replacing the component.
 
 ## Where the colours live
 
@@ -75,6 +91,10 @@ segments. So the admin should store, per wheel: **a theme name + per-prize
 - Tailwind **v4** here (tokens in `globals.css` `@theme`); prod rizzy is **v3**
   (tokens in `tailwind.config`). `app-*` classes used the same; confirm token
   values match. Arbitrary classes like `from-[#a750ff]` work in both.
+- **Token values were trued up to the sidemenu Figma.** `app-light-stroke` is now
+  `rgba(209,164,255,.1)` (was `rgba(167,80,255,.1)`), and two tokens were added:
+  `app-primary` `#7f0ff0` and `app-purple-900` `#2e0556`. Class *names* match
+  prod; only the values changed.
 - Fonts: Inter + **Pacifico** (the script "Wheel" word, via `--font-script`).
 
 ## Commands
