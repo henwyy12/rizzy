@@ -17,20 +17,12 @@
   --font-script: var(--font-pacifico);
 }
 
-/* thin scrollbar for the sidemenu, per the Figma */
-.thin-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-app-dark-200) transparent;
+/* sidemenu scrolls without a visible scrollbar (Shuffle-style) */
+.no-scrollbar {
+  scrollbar-width: none;
 }
-.thin-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.thin-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-app-dark-200);
-  border-radius: 16px;
-}
-.thin-scroll::-webkit-scrollbar-track {
-  background: transparent;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes tip-in {
