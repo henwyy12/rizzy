@@ -118,15 +118,11 @@ export function SideMenu() {
           ))}
         </div>
 
-        {/* promotions — its own section, expandable */}
+        {/* promotions — no active state; in prod this navigates to /promotions */}
         <div className="border-t border-app-light-stroke">
           <MenuItem
             item={{ label: "Promotions", icon: "promotions" }}
-            active={active === "Promotions"}
-            onSelect={() => {
-              setActive("Promotions");
-              setPromoOpen((o) => !o);
-            }}
+            onSelect={() => setPromoOpen((o) => !o)}
             trailing={
               <span className="ml-auto grid size-7 place-items-center rounded-md bg-app-dark-200">
                 <svg
