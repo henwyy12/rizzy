@@ -89,42 +89,20 @@ export function SideMenu() {
 
   return (
     <nav className="flex h-full w-60 shrink-0 flex-col border-r border-app-light-stroke bg-app-dark-100 text-app-main-text">
-      {/* header: purple gradient band with the faint rizzy mark + menu toggle */}
+      {/* header: purple gradient band + the site's sidebar toggle */}
       <div className="relative h-16 shrink-0 overflow-hidden border-b border-app-light-stroke bg-[linear-gradient(115deg,#3b1170_0%,#2b0d4d_45%,#170735_100%)]">
-        <svg
-          viewBox="0 0 240 64"
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          aria-hidden
-        >
-          <path
-            d="M150 78 L186 18 L212 52 L238 4"
-            fill="none"
-            stroke="#7a3fd0"
-            strokeOpacity="0.25"
-            strokeWidth="14"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-          <path
-            d="M-8 44 L28 -14"
-            fill="none"
-            stroke="#7a3fd0"
-            strokeOpacity="0.15"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
-        </svg>
         <button
-          aria-label="Toggle menu"
-          className="group relative flex h-full flex-col justify-center gap-[5px] px-4"
+          aria-label="Toggle sidebar"
+          className="flex h-full items-center px-4 text-white transition-colors hover:text-app-purple"
         >
-          <span className="h-[3.5px] w-7 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
-          <span className="flex items-center gap-[4px]">
-            <span className="h-[3.5px] w-3.5 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
-            <span className="size-[5px] rounded-full bg-app-primary" />
-            <span className="h-[3.5px] w-2 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
-          </span>
-          <span className="h-[3.5px] w-7 rounded-full bg-white transition-colors group-hover:bg-app-purple" />
+          {/* hamburger from rizzy.com, dot in brand purple per the Figma */}
+          <svg width="24" height="16" viewBox="0 0 24 16" fill="none" aria-hidden>
+            <path fillRule="evenodd" clipRule="evenodd" d="M0.966127 0H22.5979C23.1315 0 23.5641 0.43255 23.5641 0.966127V0.98971C23.5641 1.53168 23.1635 1.96762 22.6804 1.96762H0.883653C0.400589 1.96762 0 1.53168 0 0.98971V0.966146C0 0.966146 0.00419395 0.945176 0.0100796 0.91825L0.011782 0.913127C0.017673 0.895454 0.023564 0.87778 0.023564 0.860107C0.0188115 0.879118 0.0140589 0.900045 0.0100796 0.91825C0.00480754 0.934215 0 0.950181 0 0.966146C0 0.432569 0.43255 0 0.966127 0ZM23.5405 0.871889C23.5405 0.871889 23.5462 0.889118 23.5521 0.910818C23.5485 0.894736 23.5445 0.879904 23.5405 0.871889ZM23.5641 0.977928C23.5641 0.977928 23.5589 0.942018 23.5521 0.910818C23.558 0.933074 23.5641 0.960031 23.5641 0.977928Z" fill="currentColor" />
+            <path d="M0.966127 16C0.43255 16 0 15.5674 0 15.0339C0 14.4919 0.400589 14.056 0.883653 14.056H22.6804C23.1635 14.056 23.5641 14.4919 23.5641 15.0339C23.5641 15.0339 23.5599 15.0549 23.554 15.0818L23.5523 15.0869C23.5464 15.1046 23.5405 15.1223 23.5405 15.1399C23.5452 15.1209 23.55 15.1 23.554 15.0818C23.5593 15.0658 23.5641 15.0499 23.5641 15.0339C23.5641 15.5674 23.1315 16 22.5979 16H0.966127Z" fill="currentColor" />
+            <path d="M22.6804 6.98676C23.1635 6.98676 23.5641 7.4227 23.5641 7.96467C23.5641 8.50665 23.1635 8.94258 22.6804 8.94258H15.0221C14.539 8.94258 14.1384 8.50665 14.1384 7.96467C14.1384 7.4227 14.539 6.98676 15.0221 6.98676H22.6804Z" fill="currentColor" />
+            <path d="M0.883653 6.98676C0.400589 6.98676 0 7.4227 0 7.96467C0 8.50665 0.400589 8.94258 0.883653 8.94258H8.54197C9.02504 8.94258 9.42563 8.50665 9.42563 7.96467C9.42563 7.4227 9.02504 6.98676 8.54197 6.98676H0.883653Z" fill="currentColor" />
+            <path d="M11.782 9.13107C12.4327 9.13107 12.9602 8.60357 12.9602 7.95287C12.9602 7.30217 12.4327 6.77467 11.782 6.77467C11.1313 6.77467 10.6038 7.30217 10.6038 7.95287C10.6038 8.60357 11.1313 9.13107 11.782 9.13107Z" fill="#7f0ff0" />
+          </svg>
         </button>
       </div>
 
