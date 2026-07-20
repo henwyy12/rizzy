@@ -56,11 +56,13 @@ function MenuItem({
   active,
   onSelect,
   trailing,
+  collapsed,
 }: {
   item: Item;
   active?: boolean;
   onSelect?: () => void;
   trailing?: ReactNode;
+  collapsed?: boolean;
 }) {
   return (
     <div className="relative flex h-12 items-center px-3">
@@ -69,15 +71,22 @@ function MenuItem({
       )}
       <button
         onClick={onSelect}
-        className={`flex h-full w-full items-center gap-2.5 rounded-md pl-3 pr-2 text-left transition-colors ${
+        title={collapsed ? item.label : undefined}
+        className={`flex h-full w-full items-center gap-2.5 overflow-hidden rounded-md pl-3 pr-2 text-left transition-colors ${
           active
             ? "bg-app-purple-900 font-bold"
             : "font-semibold text-app-main-text hover:text-app-purple"
         }`}
       >
-        <Icon name={item.icon} />
-        <span className="text-sm tracking-[-0.28px]">{item.label}</span>
-        {trailing}
+        <Icon name={item.icon} className="size-4 shrink-0" />
+        <span
+          className={`whitespace-nowrap text-sm tracking-[-0.28px] transition-opacity duration-200 ${
+            collapsed ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {item.label}
+        </span>
+        {!collapsed && trailing}
       </button>
     </div>
   );
@@ -86,13 +95,19 @@ function MenuItem({
 export function SideMenu() {
   const [active, setActive] = useState("Lobby");
   const [promoOpen, setPromoOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <nav className="flex h-full w-60 shrink-0 flex-col border-r border-app-light-stroke bg-app-dark-100 text-app-main-text">
+    <nav
+      className={`flex h-full shrink-0 flex-col overflow-hidden border-r border-app-light-stroke bg-app-dark-100 text-app-main-text transition-[width] duration-300 ease-in-out ${
+        collapsed ? "w-16" : "w-60"
+      }`}
+    >
       {/* header: purple gradient band + the site's sidebar toggle */}
       <div className="relative h-16 shrink-0 overflow-hidden border-b border-app-light-stroke bg-[linear-gradient(115deg,#3b1170_0%,#2b0d4d_45%,#170735_100%)]">
         <button
           aria-label="Toggle sidebar"
+          onClick={() => setCollapsed((c) => !c)}
           className="flex h-full items-center px-4 text-white transition-colors hover:text-app-purple"
         >
           {/* hamburger from rizzy.com, dot in brand purple per the Figma */}
@@ -108,9 +123,18 @@ export function SideMenu() {
 
       {/* search */}
       <div className="shrink-0 border-b border-app-light-stroke px-3 py-4">
-        <button className="flex h-[38px] w-full items-center gap-1.5 rounded-md border border-app-light-stroke bg-app-dark-700 px-2.5 text-app-secondary-text transition-colors hover:text-app-main-text">
-          <Icon name="search" className="size-4" />
-          <span className="text-xs font-semibold tracking-[-0.24px]">Search</span>
+        <button
+          title={collapsed ? "Search" : undefined}
+          className="flex h-[38px] w-full items-center gap-1.5 overflow-hidden rounded-md border border-app-light-stroke bg-app-dark-700 px-2.5 text-app-secondary-text transition-colors hover:text-app-main-text"
+        >
+          <Icon name="search" className="size-4 shrink-0" />
+          <span
+            className={`whitespace-nowrap text-xs font-semibold tracking-[-0.24px] transition-opacity duration-200 ${
+              collapsed ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            Search
+          </span>
         </button>
       </div>
 
@@ -120,6 +144,7 @@ export function SideMenu() {
           {QUICK.map((item) => (
             <MenuItem
               key={item.label}
+              collapsed={collapsed}
               item={item}
               active={active === item.label}
               onSelect={() => setActive(item.label)}
@@ -131,6 +156,7 @@ export function SideMenu() {
         <div className="border-t border-app-light-stroke">
           <MenuItem
             item={{ label: "Promotions", icon: "promotions" }}
+            collapsed={collapsed}
             onSelect={() => setPromoOpen((o) => !o)}
             trailing={
               <span className="ml-auto grid size-7 place-items-center rounded-md bg-app-dark-200">
@@ -154,6 +180,7 @@ export function SideMenu() {
           {GAMES.map((item) => (
             <MenuItem
               key={item.label}
+              collapsed={collapsed}
               item={item}
               active={active === item.label}
               onSelect={() => setActive(item.label)}
@@ -166,28 +193,40 @@ export function SideMenu() {
           {FOOTER.map((item) => (
             <MenuItem
               key={item.label}
+              collapsed={collapsed}
               item={item}
               active={active === item.label}
               onSelect={() => setActive(item.label)}
             />
           ))}
-          <div className="px-4 py-3">
-            <button className="flex h-[42px] w-full items-center justify-between rounded-md border border-app-light-stroke bg-app-dark-200 px-2.5">
+          <div className="px-3 py-3">
+            <button
+              title={collapsed ? "Language" : undefined}
+              className="flex h-[42px] w-full items-center justify-between overflow-hidden rounded-md border border-app-light-stroke bg-app-dark-200 px-2.5"
+            >
               <span className="flex items-center gap-2">
-                <Icon name="globe" className="size-3" />
-                <span className="text-sm font-semibold tracking-[-0.28px]">English</span>
+                <Icon name="globe" className="size-3 shrink-0" />
+                <span
+                  className={`whitespace-nowrap text-sm font-semibold tracking-[-0.28px] transition-opacity duration-200 ${
+                    collapsed ? "opacity-0" : "opacity-100"
+                  }`}
+                >
+                  English
+                </span>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                className="size-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m4.5 6.5 3.5 3.5 3.5-3.5" />
-              </svg>
+              {!collapsed && (
+                <svg
+                  viewBox="0 0 16 16"
+                  className="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m4.5 6.5 3.5 3.5 3.5-3.5" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
