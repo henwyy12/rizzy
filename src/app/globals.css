@@ -17,12 +17,17 @@
   --font-script: var(--font-pacifico);
 }
 
-/* sidemenu scrolls without a visible scrollbar (Shuffle-style) */
-.no-scrollbar {
-  scrollbar-width: none;
+/* sidemenu: hairline scrollbar — enough to hint at scroll, thin enough to
+   stay out of the way in the collapsed rail */
+.hairline-scroll::-webkit-scrollbar {
+  width: 3px;
 }
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.hairline-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-app-dark-200);
+  border-radius: 999px;
+}
+.hairline-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @keyframes tip-in {

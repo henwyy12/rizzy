@@ -139,7 +139,7 @@ export function SideMenu() {
       </div>
 
       {/* scrolls; footer stays put */}
-      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto">
+      <div className="hairline-scroll min-h-0 flex-1 overflow-y-auto">
         <div className="py-2.5">
           {QUICK.map((item) => (
             <MenuItem
