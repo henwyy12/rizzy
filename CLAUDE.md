@@ -27,7 +27,9 @@ Tailwind v4.
   tracking), active row = bold + `bg-app-purple-900` + a 4px `bg-app-primary`
   accent bar on the left edge. Middle section scrolls (`.thin-scroll`), footer is
   pinned.
-- **Icons are placeholders** — swap for rizzy's real `sidebar-icons` set.
+- **Icons** live in `src/components/side-menu-icons.tsx`, exported straight from
+  the same Figma node. Each keeps its own viewBox and fills use `currentColor`,
+  so rows inherit their active/hover colour.
 - Prod's sidebar is **shadcn/ui `Sidebar`**. Keep that shell (collapse/mobile
   behaviour) and port the styling + structure from here into it, rather than
   replacing the component.

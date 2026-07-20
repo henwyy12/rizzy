@@ -2,157 +2,53 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { ICONS } from "./side-menu-icons";
+
 
 /**
  * Sidemenu — built to the Figma spec (240px, 48px rows, app-* tokens).
- * Icons here are simple placeholders; swap them for rizzy's real
- * `sidebar-icons` set when lifting this in.
+ * Icons are exported straight from the same Figma; see side-menu-icons.tsx.
  */
 
-const ICONS: Record<string, ReactNode> = {
-  lobby: <path d="M2.5 6.8 8 2.5l5.5 4.3V13a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z" />,
-  star: <path d="m8 2.4 1.7 3.5 3.8.6-2.7 2.6.6 3.8L8 11.1 4.6 13l.6-3.8L2.5 6.5l3.8-.6z" />,
-  clock: (
-    <>
-      <circle cx="8" cy="8" r="5.5" />
-      <path d="M8 5.2V8l2 1.2" />
-    </>
-  ),
-  gift: (
-    <>
-      <rect x="2.5" y="6.5" width="11" height="7" rx="1" />
-      <path d="M2.5 9.5h11M8 6.5v7" />
-    </>
-  ),
-  sparkle: <path d="m8 2.5 1.4 3.1 3.1 1.4-3.1 1.4L8 11.5 6.6 8.4 3.5 7l3.1-1.4z" />,
-  reels: (
-    <>
-      <rect x="2.5" y="3.5" width="11" height="9" rx="1" />
-      <path d="M6 3.5v9M10 3.5v9" />
-    </>
-  ),
-  cards: (
-    <>
-      <rect x="2.5" y="4" width="7" height="9" rx="1" />
-      <path d="M11 4.6l2.3.8-2 6" />
-    </>
-  ),
-  table: (
-    <>
-      <rect x="2.5" y="4.5" width="11" height="7" rx="3.5" />
-      <path d="M6 11.5v2M10 11.5v2" />
-    </>
-  ),
-  tv: (
-    <>
-      <rect x="2.5" y="4.5" width="11" height="7.5" rx="1" />
-      <path d="M6 2.5 8 4.5l2-2" />
-    </>
-  ),
-  target: (
-    <>
-      <circle cx="8" cy="8" r="5.5" />
-      <circle cx="8" cy="8" r="2" />
-    </>
-  ),
-  ticket: (
-    <>
-      <path d="M2.5 6V4.5h11V6a2 2 0 0 0 0 4v1.5h-11V10a2 2 0 0 0 0-4z" />
-      <path d="M8 5.5v5" />
-    </>
-  ),
-  joystick: (
-    <>
-      <circle cx="8" cy="5" r="2.5" />
-      <path d="M8 7.5v3M5 13.5h6" />
-    </>
-  ),
-  bag: (
-    <>
-      <path d="M3 5.5h10l-.8 8H3.8z" />
-      <path d="M5.8 5.5V4a2.2 2.2 0 0 1 4.4 0v1.5" />
-    </>
-  ),
-  fish: (
-    <>
-      <path d="M2.5 8s2-3 5-3 4.5 3 4.5 3-1.5 3-4.5 3-5-3-5-3z" />
-      <path d="M12 5.5 13.5 8 12 10.5" />
-    </>
-  ),
-  layers: <path d="m8 2.5 5.5 3L8 8.5 2.5 5.5zM2.5 8.5 8 11.5l5.5-3" />,
-  crown: <path d="M2.5 11.5 3.5 5l3 2.5L8 3.5l1.5 4L12.5 5l1 6.5z" />,
-  users: (
-    <>
-      <circle cx="6" cy="6" r="2.3" />
-      <path d="M2.5 13c0-2 1.6-3.2 3.5-3.2S9.5 11 9.5 13M10.5 4.2a2.3 2.3 0 0 1 0 4M11.5 9.9c1.2.4 2 1.5 2 3.1" />
-    </>
-  ),
-  headset: (
-    <>
-      <path d="M3 10V8a5 5 0 0 1 10 0v2" />
-      <rect x="2" y="9.5" width="2.5" height="3.5" rx="1" />
-      <rect x="11.5" y="9.5" width="2.5" height="3.5" rx="1" />
-    </>
-  ),
-  globe: (
-    <>
-      <circle cx="8" cy="8" r="5.5" />
-      <path d="M2.6 8h10.8M8 2.5c1.5 1.7 2.2 3.6 2.2 5.5S9.5 12.3 8 13.5c-1.5-1.2-2.2-3.6-2.2-5.5S6.5 4.2 8 2.5z" />
-    </>
-  ),
-  search: (
-    <>
-      <circle cx="7.2" cy="7.2" r="4" />
-      <path d="m10.2 10.2 3 3" />
-    </>
-  ),
-};
-
 function Icon({ name, className = "size-4" }: { name: string; className?: string }) {
+  const icon = ICONS[name];
+  if (!icon) return null;
   return (
-    <svg
-      viewBox="0 0 16 16"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.3}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {ICONS[name]}
+    <svg viewBox={icon.vb} className={className} aria-hidden>
+      {icon.body}
     </svg>
   );
 }
+
 
 type Item = { label: string; icon: string };
 
 const QUICK: Item[] = [
   { label: "Lobby", icon: "lobby" },
-  { label: "Favourites", icon: "star" },
-  { label: "Recently Played", icon: "clock" },
+  { label: "Favourites", icon: "favourites" },
+  { label: "Recently Played", icon: "recent" },
 ];
 
 const GAMES: Item[] = [
-  { label: "Originals", icon: "sparkle" },
-  { label: "Slots", icon: "reels" },
-  { label: "Live Casino", icon: "cards" },
-  { label: "Table Games", icon: "table" },
-  { label: "Baccarat", icon: "cards" },
-  { label: "Game Shows", icon: "tv" },
-  { label: "Roulette", icon: "target" },
-  { label: "Blackjack", icon: "cards" },
-  { label: "Lottery", icon: "ticket" },
-  { label: "Arcade", icon: "joystick" },
-  { label: "Bonus Buy", icon: "bag" },
-  { label: "Fishing", icon: "fish" },
-  { label: "Providers", icon: "layers" },
+  { label: "Originals", icon: "originals" },
+  { label: "Slots", icon: "slots" },
+  { label: "Live Casino", icon: "liveCasino" },
+  { label: "Table Games", icon: "tableGames" },
+  { label: "Baccarat", icon: "baccarat" },
+  { label: "Game Shows", icon: "gameShows" },
+  { label: "Roulette", icon: "roulette" },
+  { label: "Blackjack", icon: "blackjack" },
+  { label: "Lottery", icon: "lottery" },
+  { label: "Arcade", icon: "arcade" },
+  { label: "Bonus Buy", icon: "bonusBuy" },
+  { label: "Fishing", icon: "fishing" },
+  { label: "Providers", icon: "providers" },
 ];
 
 const FOOTER: Item[] = [
-  { label: "VIP Club", icon: "crown" },
-  { label: "Affiliate", icon: "users" },
-  { label: "Live Support", icon: "headset" },
+  { label: "VIP Club", icon: "vip" },
+  { label: "Affiliate", icon: "affiliate" },
+  { label: "Live Support", icon: "support" },
 ];
 
 function MenuItem({
@@ -225,7 +121,7 @@ export function SideMenu() {
         {/* promotions — its own section, expandable */}
         <div className="border-t border-app-light-stroke">
           <MenuItem
-            item={{ label: "Promotions", icon: "gift" }}
+            item={{ label: "Promotions", icon: "promotions" }}
             active={active === "Promotions"}
             onSelect={() => {
               setActive("Promotions");
