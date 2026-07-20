@@ -72,7 +72,7 @@ function MenuItem({
         className={`flex h-full w-full items-center gap-2.5 rounded-md pl-3 pr-2 text-left transition-colors ${
           active
             ? "bg-app-purple-900 font-bold"
-            : "font-semibold text-app-main-text hover:bg-app-dark-200/60"
+            : "font-semibold text-app-main-text hover:text-app-purple"
         }`}
       >
         <Icon name={item.icon} />
