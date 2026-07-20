@@ -100,7 +100,7 @@ export function SideMenu() {
       {/* search */}
       <div className="shrink-0 border-b border-app-light-stroke px-3 py-4">
         <button className="flex h-[38px] w-full items-center gap-1.5 rounded-md border border-app-light-stroke bg-app-dark-700 px-2.5 text-app-secondary-text transition-colors hover:text-app-main-text">
-          <Icon name="search" className="size-5" />
+          <Icon name="search" className="size-4" />
           <span className="text-xs font-semibold tracking-[-0.24px]">Search</span>
         </button>
       </div>
