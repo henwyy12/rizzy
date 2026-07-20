@@ -74,7 +74,7 @@ function MenuItem({
         title={collapsed ? item.label : undefined}
         className={`flex h-full w-full items-center gap-2.5 overflow-hidden rounded-md pl-3 pr-2 text-left transition-colors ${
           active
-            ? "bg-app-purple-900 font-bold"
+            ? "font-bold text-app-purple"
             : "font-semibold text-app-main-text hover:text-app-purple"
         }`}
       >
